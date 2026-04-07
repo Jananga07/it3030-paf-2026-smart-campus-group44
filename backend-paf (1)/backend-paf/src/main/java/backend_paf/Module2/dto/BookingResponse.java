@@ -1,42 +1,30 @@
-package backend_paf.Module2.Model;
+package backend_paf.Module2.dto;
 
-import backend.Module2.Enums.BookingStatus;
-import jakarta.persistence.*;
+import backend_paf.Module2.Enums.BookingStatus;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Entity
-@Table(name = "bookings")
+public class BookingResponse {
 
-public class BookingModel {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long userId;
     private Long resourceId;
-
     private LocalDate bookingDate;
-
     private LocalTime startTime;
     private LocalTime endTime;
-
     private String userEmail;
-
     private String purpose;
-
     private Integer attendees;
-
-    @Enumerated(EnumType.STRING)
     private BookingStatus status;
-
     private String rejectionReason;
 
-    public BookingModel() {}
+    public BookingResponse() {}
 
-    public BookingModel(Long userId, Long resourceId, LocalDate bookingDate, LocalTime startTime,
-                   LocalTime endTime, String userEmail ,String purpose, Integer attendees, BookingStatus status) {
+    public BookingResponse(Long id, Long userId, Long resourceId, LocalDate bookingDate,
+                           LocalTime startTime, LocalTime endTime, String userEmail, String purpose,
+                           Integer attendees, BookingStatus status, String rejectionReason) {
+        this.id = id;
         this.userId = userId;
         this.resourceId = resourceId;
         this.bookingDate = bookingDate;
@@ -46,6 +34,7 @@ public class BookingModel {
         this.purpose = purpose;
         this.attendees = attendees;
         this.status = status;
+        this.rejectionReason = rejectionReason;
     }
 
     public Long getId() { return id; }

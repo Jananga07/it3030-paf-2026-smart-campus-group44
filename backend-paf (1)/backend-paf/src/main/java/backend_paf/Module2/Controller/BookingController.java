@@ -1,9 +1,9 @@
 package backend_paf.Module2.Controller;
 
-import backend.Module2.Enums.BookingStatus;
-import backend.Module2.Service.BookingService;
-import backend.Module2.dto.BookingRequest;
-import backend.Module2.dto.BookingResponse;
+import backend_paf.Module2.Enums.BookingStatus;
+import backend_paf.Module2.Services.BookingService;
+import backend_paf.Module2.dto.BookingRequest;
+import backend_paf.Module2.dto.BookingResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

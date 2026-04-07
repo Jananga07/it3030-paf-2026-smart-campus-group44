@@ -1,7 +1,7 @@
 package backend_paf.Module2.Repository;
 
-import backend.Module_2.Enums.BookingStatus;
-import backend.Module_2.Model.Booking;
+import backend_paf.Module2.Enums.BookingStatus;
+import backend_paf.Module2.Model.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

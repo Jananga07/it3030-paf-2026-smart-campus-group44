@@ -1,8 +1,8 @@
-package backend_paf.Module2.Services.;
+package backend_paf.Module2.Services;
 
-import backend.Module2.Enums.BookingStatus;
-import backend.Module2.dto.BookingRequest;
-import backend.Module2.dto.BookingResponse;
+import backend_paf.Module2.Enums.BookingStatus;
+import backend_paf.Module2.dto.BookingRequest;
+import backend_paf.Module2.dto.BookingResponse;
 
 import java.util.List;
 

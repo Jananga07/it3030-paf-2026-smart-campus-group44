@@ -1,30 +1,42 @@
-package backend_paf.Module2.dto;
+package backend_paf.Module2.Model;
 
-import backend.Module_2.Enums.BookingsStatus;
+import backend_paf.Module2.Enums.BookingStatus;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class BookingsResponse {
+@Entity
+@Table(name = "bookings")
 
+public class Booking {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Long userId;
     private Long resourceId;
+
     private LocalDate bookingDate;
+
     private LocalTime startTime;
     private LocalTime endTime;
+
     private String userEmail;
+
     private String purpose;
+
     private Integer attendees;
-    private BookingsStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
+
     private String rejectionReason;
 
-    public BookingsResponse() {}
+    public Booking() {}
 
-    public BookingsResponse(Long id, Long userId, Long resourceId, LocalDate bookingDate,
-                            LocalTime startTime, LocalTime endTime, String userEmail, String purpose,
-                            Integer attendees, BookingsStatus status, String rejectionReason) {
-        this.id = id;
+    public Booking(Long userId, Long resourceId, LocalDate bookingDate, LocalTime startTime,
+                   LocalTime endTime, String userEmail , String purpose, Integer attendees, BookingStatus status) {
         this.userId = userId;
         this.resourceId = resourceId;
         this.bookingDate = bookingDate;
@@ -34,7 +46,6 @@ public class BookingsResponse {
         this.purpose = purpose;
         this.attendees = attendees;
         this.status = status;
-        this.rejectionReason = rejectionReason;
     }
 
     public Long getId() { return id; }
@@ -64,8 +75,8 @@ public class BookingsResponse {
     public Integer getAttendees() { return attendees; }
     public void setAttendees(Integer attendees) { this.attendees = attendees; }
 
-    public BookingsStatus getStatus() { return status; }
-    public void setStatus(BookingsStatus status) { this.status = status; }
+    public BookingStatus getStatus() { return status; }
+    public void setStatus(BookingStatus status) { this.status = status; }
 
     public String getRejectionReason() { return rejectionReason; }
     public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
