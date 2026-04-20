@@ -1,22 +1,16 @@
 import React from "react";
 import { motion } from "framer-motion";
 import "./Home.css";
+import Nav from "../M2/components/Navbar"
 
 export default function HomePage() {
   return (
     <div>
       {/* Navbar */}
-      <nav className="navbar">
+      <nav className="navbar" ><Nav/>
         <h1 className="logo">Smart Campus</h1>
 
-        {/* NEW: Module Buttons */}
-        <div className="nav-modules">
-          <button className="module-btn">M1</button>
-          <button className="module-btn">M2</button>
-          <button className="module-btn">M3</button>
-          <button className="module-btn">M4</button>
-        </div>
-
+        
         {/* Existing Buttons */}
         <div className="nav-buttons">
           <button className="btn-outline">Login</button>
