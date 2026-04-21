@@ -24,6 +24,27 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100">
       {/* Hero */}
       <section className="text-center py-24 px-6">
+
+import "./Home.css";
+import Nav from "../M2/components/Navbar"
+
+export default function HomePage() {
+  return (
+    <div>
+      {/* Navbar */}
+      <nav className="navbar" ><Nav/>
+        <h1 className="logo">Smart Campus</h1>
+
+        
+        {/* Existing Buttons */}
+        <div className="nav-buttons">
+          <button className="btn-outline">Login</button>
+          <button className="btn-primary">Get Started</button>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="hero">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
