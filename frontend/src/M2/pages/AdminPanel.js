@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { getAllBookings, approveBooking, rejectBooking, cancelBooking, deleteBooking } from '../api/bookingApi';
 import StatusBadge from '../components/StatusBadge';
 
@@ -13,15 +13,15 @@ function AdminPanel() {
   const [rejectReason, setRejectReason] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
 
-  const fetchBookings = () => {
+  const fetchBookings = useCallback(() => {
     setLoading(true);
     getAllBookings(tab === 'ALL' ? null : tab)
       .then(setBookings)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  };
+  }, [tab]);
 
-  useEffect(() => { fetchBookings(); }, [tab]);
+  useEffect(() => { fetchBookings(); }, [fetchBookings]);
 
   const handleApprove = async (id) => {
     setActionLoading(true);
