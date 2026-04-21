@@ -21,15 +21,6 @@ function App() {
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>
     </>
-import Navbar from './M2/components/Navbar'
-
-
-function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Home/>}/>
-      <Route path='/nav' element={<Navbar/>}/>
-    </Routes>
   );
 }
 
