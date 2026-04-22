@@ -1,5 +1,10 @@
 package backend_paf.Module1.service;
 
+Module1-feature/Availability
+import backend_paf.Module1.model.Resource;
+
+import java.time.LocalDate;
+=======
 import backend_paf.Module1.dto.ResourceRequestDTO;
 import backend_paf.Module1.dto.ResourceResponseDTO;
 Module1-feature/Validation
@@ -9,10 +14,24 @@ import backend_paf.Module1.enums.ResourceStatus;
 
 import java.time.LocalDate;
 Module1
+ Module1
 import java.util.List;
 
 public interface ResourceService {
 
+ Module1-feature/Availability
+    // CRUD (from CRUD branch)
+    Resource createResource(Resource resource);
+    List<Resource> getAllResources();
+    Resource getResourceById(Long id);
+    Resource updateResource(Long id, Resource resource);
+    void deleteResource(Long id);
+
+    // Feature: Availability
+    List<Resource> getAvailableResources(LocalDate from, LocalDate to);
+    List<Resource> getAvailableOnDate(LocalDate date);
+}
+=======
 Module1-feature/Validation
     ResourceResponseDTO createResource(ResourceRequestDTO requestDTO);
 
@@ -43,3 +62,4 @@ Module1-feature/Validation
     List<ResourceResponseDTO> getAvailableResources(LocalDate from, LocalDate to);
 }
 Module1
+ Module1

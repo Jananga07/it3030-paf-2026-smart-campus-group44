@@ -1,5 +1,7 @@
 package backend_paf.Module1.repository;
 
+ Module1-feature/Availability
+=======
 Module1-feature/Validation
 import backend_paf.Module1.model.Resource;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
 =======
 import backend_paf.Module1.enums.ResourceStatus;
+Module1
 import backend_paf.Module1.model.Resource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +24,16 @@ import java.util.List;
 @Repository
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
+ Module1-feature/Availability
+    // Feature: Availability — find resources available within a given date range
+    @Query("SELECT r FROM Resource r WHERE r.availableFrom <= :to AND r.availableTo >= :from")
+    List<Resource> findAvailableResources(@Param("from") LocalDate from,
+                                          @Param("to") LocalDate to);
+
+    // Feature: Availability — find resources available on a specific date
+    @Query("SELECT r FROM Resource r WHERE r.availableFrom <= :date AND r.availableTo >= :date")
+    List<Resource> findAvailableOnDate(@Param("date") LocalDate date);
+=======
     // Feature: Search — by type
     List<Resource> findByTypeIgnoreCase(String type);
 
@@ -48,5 +61,6 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     @Query("SELECT r FROM Resource r WHERE r.availableFrom <= :to AND r.availableTo >= :from")
     List<Resource> findAvailableResources(@Param("from") LocalDate from,
                                           @Param("to") LocalDate to);
+Module1
 Module1
 }

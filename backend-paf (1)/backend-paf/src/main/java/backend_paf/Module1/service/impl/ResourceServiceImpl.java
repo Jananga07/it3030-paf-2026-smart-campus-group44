@@ -1,5 +1,7 @@
 package backend_paf.Module1.service.impl;
 
+Module1-feature/Availability
+=======
 import backend_paf.Module1.dto.ResourceRequestDTO;
 import backend_paf.Module1.dto.ResourceResponseDTO;
  Module1-feature/Validation
@@ -7,11 +9,16 @@ import backend_paf.Module1.dto.ResourceResponseDTO;
 import backend_paf.Module1.enums.ResourceStatus;
  Module1
 import backend_paf.Module1.exception.ResourceNotFoundException;
+Module1
 import backend_paf.Module1.model.Resource;
 import backend_paf.Module1.repository.ResourceRepository;
 import backend_paf.Module1.service.ResourceService;
 import org.springframework.stereotype.Service;
 
+ Module1-feature/Availability
+import java.time.LocalDate;
+import java.util.List;
+=======
  Module1-feature/Validation
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +26,7 @@ import java.util.stream.Collectors;
 import java.time.LocalDate;
 import java.util.List;
 Module1
+ Module1
 
 @Service
 public class ResourceServiceImpl implements ResourceService {
@@ -28,7 +36,41 @@ public class ResourceServiceImpl implements ResourceService {
     public ResourceServiceImpl(ResourceRepository resourceRepository) {
         this.resourceRepository = resourceRepository;
     }
+ Module1-feature/Availability
+    // ── CRUD ────────────────────────────────────────────────────────────────
 
+    @Override
+    public Resource createResource(Resource resource) {
+        return resourceRepository.save(resource);
+    }
+
+    @Override
+    public List<Resource> getAllResources() {
+        return resourceRepository.findAll();
+    }
+
+    @Override
+    public Resource getResourceById(Long id) {
+        return resourceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Resource not found with id: " + id));
+    }
+
+    @Override
+    public Resource updateResource(Long id, Resource resource) {
+        Resource existing = resourceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Resource not found with id: " + id));
+
+        existing.setName(resource.getName());
+        existing.setType(resource.getType());
+        existing.setLocation(resource.getLocation());
+        existing.setCapacity(resource.getCapacity());
+        existing.setDescription(resource.getDescription());
+        existing.setStatus(resource.getStatus());
+        existing.setAvailableFrom(resource.getAvailableFrom());
+        existing.setAvailableTo(resource.getAvailableTo());
+
+        return resourceRepository.save(existing);
+=======
  Module1-feature/Validation
     private Resource toEntity(ResourceRequestDTO dto) {
         Resource resource = new Resource();
@@ -147,10 +189,15 @@ Module1
         }
         return toDTO(resourceRepository.save(existing));
  Module1
+Module1
     }
 
     @Override
     public void deleteResource(Long id) {
+ Module1-feature/Availability
+        if (!resourceRepository.existsById(id)) {
+            throw new RuntimeException("Resource not found with id: " + id);
+=======
  Module1-feature/Validation
         Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
@@ -158,10 +205,23 @@ Module1
 =======
         if (!resourceRepository.existsById(id)) {
             throw new ResourceNotFoundException(id);
+Module1
         }
         resourceRepository.deleteById(id);
     }
 
+ Module1-feature/Availability
+    // ── Availability ────────────────────────────────────────────────────────
+
+    @Override
+    public List<Resource> getAvailableResources(LocalDate from, LocalDate to) {
+        return resourceRepository.findAvailableResources(from, to);
+    }
+
+    @Override
+    public List<Resource> getAvailableOnDate(LocalDate date) {
+        return resourceRepository.findAvailableOnDate(date);
+=======
     // ── Search ──────────────────────────────────────────────────────────────
 
     @Override
@@ -192,5 +252,6 @@ Module1
         return resourceRepository.findAvailableResources(from, to)
                 .stream().map(this::toDTO).toList();
  Module1
+Module1
     }
 }
