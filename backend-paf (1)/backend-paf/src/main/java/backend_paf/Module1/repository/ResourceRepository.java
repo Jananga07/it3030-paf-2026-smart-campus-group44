@@ -1,14 +1,22 @@
 package backend_paf.Module1.repository;
 
+Module1-feature/CRUD
+=======
  Module1-feature/Availability
 =======
 Module1-feature/Validation
+Module1
 import backend_paf.Module1.model.Resource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
+Module1-feature/CRUD
+
+    // CRUD branch → no extra methods needed
+}
+=======
 =======
 import backend_paf.Module1.enums.ResourceStatus;
 Module1
@@ -64,3 +72,4 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
 Module1
 Module1
 }
+ Module1

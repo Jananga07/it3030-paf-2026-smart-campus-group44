@@ -1,5 +1,9 @@
 package backend_paf.Module1.service;
 
+Module1-feature/CRUD
+import backend_paf.Module1.model.Resource;
+
+=======
 Module1-feature/Availability
 import backend_paf.Module1.model.Resource;
 
@@ -15,10 +19,23 @@ import backend_paf.Module1.enums.ResourceStatus;
 import java.time.LocalDate;
 Module1
  Module1
+ Module1
 import java.util.List;
 
 public interface ResourceService {
 
+Module1-feature/CRUD
+    Resource createResource(Resource resource);
+
+    List<Resource> getAllResources();
+
+    Resource getResourceById(Long id);
+
+    Resource updateResource(Long id, Resource resource);
+
+    void deleteResource(Long id);
+}
+=======
  Module1-feature/Availability
     // CRUD (from CRUD branch)
     Resource createResource(Resource resource);
@@ -63,3 +80,4 @@ Module1-feature/Validation
 }
 Module1
  Module1
+Module1

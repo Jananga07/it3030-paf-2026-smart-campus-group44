@@ -1,5 +1,7 @@
 package backend_paf.Module1.service.impl;
 
+Module1-feature/CRUD
+=======
 Module1-feature/Availability
 =======
 import backend_paf.Module1.dto.ResourceRequestDTO;
@@ -10,11 +12,15 @@ import backend_paf.Module1.enums.ResourceStatus;
  Module1
 import backend_paf.Module1.exception.ResourceNotFoundException;
 Module1
+Module1
 import backend_paf.Module1.model.Resource;
 import backend_paf.Module1.repository.ResourceRepository;
 import backend_paf.Module1.service.ResourceService;
 import org.springframework.stereotype.Service;
 
+Module1-feature/CRUD
+import java.util.List;
+=======
  Module1-feature/Availability
 import java.time.LocalDate;
 import java.util.List;
@@ -27,6 +33,7 @@ import java.time.LocalDate;
 import java.util.List;
 Module1
  Module1
+Module1
 
 @Service
 public class ResourceServiceImpl implements ResourceService {
@@ -36,8 +43,11 @@ public class ResourceServiceImpl implements ResourceService {
     public ResourceServiceImpl(ResourceRepository resourceRepository) {
         this.resourceRepository = resourceRepository;
     }
+ Module1-feature/CRUD
+=======
  Module1-feature/Availability
     // ── CRUD ────────────────────────────────────────────────────────────────
+Module1
 
     @Override
     public Resource createResource(Resource resource) {
@@ -51,12 +61,32 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public Resource getResourceById(Long id) {
+Module1-feature/CRUD
+        return resourceRepository.findById(id).orElse(null);
+=======
         return resourceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Resource not found with id: " + id));
+Module1
     }
 
     @Override
     public Resource updateResource(Long id, Resource resource) {
+Module1-feature/CRUD
+        Resource existingResource = resourceRepository.findById(id).orElse(null);
+
+        if (existingResource != null) {
+            existingResource.setName(resource.getName());
+            existingResource.setCapacity(resource.getCapacity());
+            existingResource.setLocation(resource.getLocation());
+            existingResource.setAvailabilityWindow(resource.getAvailabilityWindow());
+            existingResource.setType(resource.getType());
+            existingResource.setStatus(resource.getStatus());
+
+            return resourceRepository.save(existingResource);
+        }
+
+        return null;
+=======
         Resource existing = resourceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Resource not found with id: " + id));
 
@@ -190,10 +220,16 @@ Module1
         return toDTO(resourceRepository.save(existing));
  Module1
 Module1
+Module1
     }
 
     @Override
     public void deleteResource(Long id) {
+Module1-feature/CRUD
+        resourceRepository.deleteById(id);
+    }
+}
+=======
  Module1-feature/Availability
         if (!resourceRepository.existsById(id)) {
             throw new RuntimeException("Resource not found with id: " + id);
@@ -255,3 +291,4 @@ Module1
 Module1
     }
 }
+Module1

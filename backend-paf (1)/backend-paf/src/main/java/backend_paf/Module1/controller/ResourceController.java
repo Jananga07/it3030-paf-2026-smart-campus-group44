@@ -1,5 +1,11 @@
 package backend_paf.Module1.controller;
 
+Module1-feature/CRUD
+import backend_paf.Module1.model.Resource;
+import backend_paf.Module1.service.ResourceService;
+import org.springframework.web.bind.annotation.*;
+
+=======
  Module1-feature/Availability
 import backend_paf.Module1.model.Resource;
 import backend_paf.Module1.service.ResourceService;
@@ -26,6 +32,7 @@ Module1-feature/Validation
 import java.time.LocalDate;
 Module1
  Module1
+Module1
 import java.util.List;
 
 @RestController
@@ -39,6 +46,13 @@ public class ResourceController {
         this.resourceService = resourceService;
     }
 
+Module1-feature/CRUD
+    @PostMapping
+    public Resource createResource(@RequestBody Resource resource) {
+        return resourceService.createResource(resource);
+    }
+
+=======
  Module1-feature/Availability
     // ── CRUD ────────────────────────────────────────────────────────────────
 
@@ -50,11 +64,16 @@ public class ResourceController {
     }
 
     // GET /api/resources → 200 OK
+Module1
     @GetMapping
     public List<Resource> getAllResources() {
         return resourceService.getAllResources();
     }
 
+Module1-feature/CRUD
+    @GetMapping("/{id}")
+    public Resource getResourceById(@PathVariable Long id) {
+=======
     // GET /api/resources/{id} → 200 OK
     @GetMapping("/{id}")
     public ResponseEntity<Resource> getResourceById(@PathVariable Long id) {
@@ -117,10 +136,23 @@ Module1-feature/Validation
 
     @GetMapping("/{id}")
     public ResourceResponseDTO getResourceById(@PathVariable Long id) {
+Module1
         return resourceService.getResourceById(id);
     }
 
     @PutMapping("/{id}")
+Module1-feature/CRUD
+    public Resource updateResource(@PathVariable Long id, @RequestBody Resource resource) {
+        return resourceService.updateResource(id, resource);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteResource(@PathVariable Long id) {
+        resourceService.deleteResource(id);
+        return "Resource deleted successfully";
+    }
+}
+=======
     public ResourceResponseDTO updateResource(@PathVariable Long id,
                                                @Valid @RequestBody ResourceRequestDTO dto) {
         return resourceService.updateResource(id, dto);
@@ -192,3 +224,4 @@ Module1-feature/Validation
 }
 Module1
  Module1
+Module1

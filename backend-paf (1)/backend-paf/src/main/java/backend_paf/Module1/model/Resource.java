@@ -1,5 +1,8 @@
 package backend_paf.Module1.model;
 
+Module1-feature/CRUD
+import jakarta.persistence.*;
+=======
  Module1-feature/Availability
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -12,6 +15,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 Module1
  Module1
+ Module1
 
 @Entity
 @Table(name = "resources")
@@ -22,6 +26,90 @@ public class Resource {
     private Long id;
 
     private String name;
+Module1-feature/CRUD
+    private Integer capacity;
+    private String location;
+
+    private String type;   // simple string (CRUD branch)
+    private String status; // simple string (CRUD branch)
+
+    private String availabilityWindow;
+
+    public Resource() {
+    }
+
+    public Resource(Long id, String name, Integer capacity, String location,
+                    String type, String status, String availabilityWindow) {
+        this.id = id;
+        this.name = name;
+        this.capacity = capacity;
+        this.location = location;
+        this.type = type;
+        this.status = status;
+        this.availabilityWindow = availabilityWindow;
+    }
+
+    // GETTERS
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getAvailabilityWindow() {
+        return availabilityWindow;
+    }
+
+    // SETTERS
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setAvailabilityWindow(String availabilityWindow) {
+        this.availabilityWindow = availabilityWindow;
+    }
+}
+=======
     private String type;
     private String location;
     private Integer capacity;
@@ -116,3 +204,4 @@ Module1-feature/Validation
 Module1
  Module1
 }
+Module1
