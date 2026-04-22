@@ -1,5 +1,13 @@
 package backend_paf.Module1.repository;
 
+Module1-feature/Validation
+import backend_paf.Module1.model.Resource;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ResourceRepository extends JpaRepository<Resource, Long> {
+=======
 import backend_paf.Module1.enums.ResourceStatus;
 import backend_paf.Module1.model.Resource;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,4 +48,5 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     @Query("SELECT r FROM Resource r WHERE r.availableFrom <= :to AND r.availableTo >= :from")
     List<Resource> findAvailableResources(@Param("from") LocalDate from,
                                           @Param("to") LocalDate to);
+Module1
 }
