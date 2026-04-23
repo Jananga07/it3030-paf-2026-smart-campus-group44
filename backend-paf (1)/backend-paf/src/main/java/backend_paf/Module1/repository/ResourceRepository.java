@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -29,7 +29,7 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
            "r.status = 'ACTIVE' AND " +
            "(r.availableFrom IS NULL OR r.availableFrom <= :to) AND " +
            "(r.availableTo IS NULL OR r.availableTo >= :from)")
-    List<Resource> findAvailableResources(@Param("from") LocalDate from,
-                                          @Param("to") LocalDate to);
+    List<Resource> findAvailableResources(@Param("from") LocalTime from,
+                                          @Param("to") LocalTime to);
 }
 
