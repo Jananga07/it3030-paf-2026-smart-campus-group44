@@ -4,7 +4,7 @@ import backend_paf.Module1.dto.ResourceRequestDTO;
 import backend_paf.Module1.dto.ResourceResponseDTO;
 import backend_paf.Module1.enums.ResourceStatus;
 
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public interface ResourceService {
@@ -25,6 +25,6 @@ public interface ResourceService {
 
     List<ResourceResponseDTO> getResourcesByStatus(ResourceStatus status);
 
-    List<ResourceResponseDTO> getAvailableResources(LocalDate from, LocalDate to);
+    List<ResourceResponseDTO> getAvailableResources(LocalTime from, LocalTime to);
 }
 
