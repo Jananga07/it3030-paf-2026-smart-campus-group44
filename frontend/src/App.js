@@ -3,6 +3,9 @@ import { Routes, Route } from "react-router-dom";
 
 import Navbar from './M2/components/Navbar';
 import Home from './Home/Home';
+import ResourceCatalogue from './M1/pages/ResourceCatalogue';
+import ResourceDetails from './M1/pages/ResourceDetails';
+
 import BookingForm from './M2/pages/BookingForm';
 import MyBookings from './M2/pages/MyBookings';
 import AdminPanel from './M2/pages/AdminPanel';
@@ -14,6 +17,11 @@ import CheckIn from './M2/pages/CheckIn';
 
 function App() {
   return (
+    <Routes>
+      <Route path="/" element={<Home/>}/>
+      <Route path="/resources" element={<ResourceCatalogue/>}/>
+      <Route path="/resources/:id" element={<ResourceDetails/>}/>
+    </Routes>
     <>
       <Navbar />
       <Routes>
