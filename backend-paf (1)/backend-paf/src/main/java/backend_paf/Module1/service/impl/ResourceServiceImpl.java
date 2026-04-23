@@ -9,7 +9,7 @@ import backend_paf.Module1.repository.ResourceRepository;
 import backend_paf.Module1.service.ResourceService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -112,7 +112,7 @@ public class ResourceServiceImpl implements ResourceService {
     // ── Availability ────────────────────────────────────────────────────────
 
     @Override
-    public List<ResourceResponseDTO> getAvailableResources(LocalDate from, LocalDate to) {
+    public List<ResourceResponseDTO> getAvailableResources(LocalTime from, LocalTime to) {
         return resourceRepository.findAvailableResources(from, to)
                 .stream().map(this::toDTO).toList();
     }
