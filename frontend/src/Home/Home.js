@@ -1,8 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
 export default function HomePage() {
+  const navigate = useNavigate();
   return (
     <div>
       {/* Navbar */}
@@ -11,7 +13,7 @@ export default function HomePage() {
 
         {/* NEW: Module Buttons */}
         <div className="nav-modules">
-          <button className="module-btn">M1</button>
+          <button className="module-btn" onClick={() => navigate("/resources")}>M1</button>
           <button className="module-btn">M2</button>
           <button className="module-btn">M3</button>
           <button className="module-btn">M4</button>
