@@ -6,7 +6,7 @@ const links = [
   { to: '/bookings', label: 'All Bookings' },
   { to: '/my-bookings', label: 'My Bookings' },
   { to: '/book', label: 'New Booking' },
-  { to: '/admin', label: 'Admin Panel' },
+  { to: '/admin-dashboard', label: '🛠 Admin' },
 ];
 
 function Navbar() {

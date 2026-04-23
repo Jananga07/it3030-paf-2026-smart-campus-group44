@@ -13,6 +13,7 @@ import BookingDetails from './M2/pages/BookingDetails';
 import BookingList from './M2/pages/BookingList';
 import Analytics from './M2/pages/Analytics';
 import CheckIn from './M2/pages/CheckIn';
+import AdminDashboard from './AdminDashboard/AdminDashboard';
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path="/bookings" element={<MyBookings />} />
         <Route path="/bookings/:id" element={<BookingDetails />} />
         <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/analytics" element={<Analytics/>} />
         <Route path="/checkin/:id" element={<CheckIn />} />
 
