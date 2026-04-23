@@ -1,7 +1,7 @@
 package backend_paf.Module1.dto;
 
 import backend_paf.Module1.enums.ResourceStatus;
-import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class ResourceResponseDTO {
 
@@ -11,15 +11,15 @@ public class ResourceResponseDTO {
     private String location;
     private Integer capacity;
     private String description;
-    private LocalDate availableFrom;
-    private LocalDate availableTo;
+    private LocalTime availableFrom;
+    private LocalTime availableTo;
     private ResourceStatus status;
 
     public ResourceResponseDTO() {}
 
     public ResourceResponseDTO(Long id, String name, String type, String location,
                                 Integer capacity, String description,
-                                LocalDate availableFrom, LocalDate availableTo,
+                                LocalTime availableFrom, LocalTime availableTo,
                                 ResourceStatus status) {
         this.id = id;
         this.name = name;
@@ -38,8 +38,8 @@ public class ResourceResponseDTO {
     public String getLocation() { return location; }
     public Integer getCapacity() { return capacity; }
     public String getDescription() { return description; }
-    public LocalDate getAvailableFrom() { return availableFrom; }
-    public LocalDate getAvailableTo() { return availableTo; }
+    public LocalTime getAvailableFrom() { return availableFrom; }
+    public LocalTime getAvailableTo() { return availableTo; }
     public ResourceStatus getStatus() { return status; }
 
     public void setId(Long id) { this.id = id; }
@@ -48,7 +48,7 @@ public class ResourceResponseDTO {
     public void setLocation(String location) { this.location = location; }
     public void setCapacity(Integer capacity) { this.capacity = capacity; }
     public void setDescription(String description) { this.description = description; }
-    public void setAvailableFrom(LocalDate availableFrom) { this.availableFrom = availableFrom; }
-    public void setAvailableTo(LocalDate availableTo) { this.availableTo = availableTo; }
+    public void setAvailableFrom(LocalTime availableFrom) { this.availableFrom = availableFrom; }
+    public void setAvailableTo(LocalTime availableTo) { this.availableTo = availableTo; }
     public void setStatus(ResourceStatus status) { this.status = status; }
 }
