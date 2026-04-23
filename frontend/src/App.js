@@ -17,11 +17,7 @@ import CheckIn from './M2/pages/CheckIn';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home/>}/>
-      <Route path="/resources" element={<ResourceCatalogue/>}/>
-      <Route path="/resources/:id" element={<ResourceDetails/>}/>
-    </Routes>
+    
     <>
       <Navbar />
       <Routes>

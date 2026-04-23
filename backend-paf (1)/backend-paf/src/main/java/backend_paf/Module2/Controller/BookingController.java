@@ -4,7 +4,6 @@ import backend_paf.Module2.Enums.BookingStatus;
 import backend_paf.Module2.Services.BookingService;
 import backend_paf.Module2.dto.BookingRequest;
 import backend_paf.Module2.dto.BookingResponse;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class BookingController {
     // POST /api/bookings
     // POST /api/bookings — User creates a booking request
     @PostMapping
-    public ResponseEntity<BookingResponse> createBooking(@Valid @RequestBody BookingRequest request) {
+    public ResponseEntity<BookingResponse> createBooking(@RequestBody BookingRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.createBooking(request));
     }
 
