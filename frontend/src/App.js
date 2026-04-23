@@ -14,6 +14,7 @@ import BookingList from './M2/pages/BookingList';
 import Analytics from './M2/pages/Analytics';
 import CheckIn from './M2/pages/CheckIn';
 import AdminDashboard from './AdminDashboard/AdminDashboard';
+import AdminResourceList from './AdminDashboard/AdminResourceList';
 
 
 function App() {
@@ -32,6 +33,9 @@ function App() {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/analytics" element={<Analytics/>} />
         <Route path="/checkin/:id" element={<CheckIn />} />
+        <Route path="/resources" element={<ResourceCatalogue />} />
+        <Route path="/resources/:id" element={<ResourceDetails />} />
+        <Route path="/admin/resources" element={<AdminResourceList />} />
 
       </Routes>
     </>
