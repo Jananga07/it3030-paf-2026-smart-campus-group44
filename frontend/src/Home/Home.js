@@ -1,8 +1,16 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
+// Module 4 – Notifications (Member 4)
+import NotificationBell from "../M4/NotificationBell";
+// Module 5 – Auth (Member 5)
+import { useAuth } from "../M5/useAuth";
 
 export default function HomePage() {
+  const { user, logout } = useAuth();
+  const navigate         = useNavigate();
+
   return (
     <div>
       {/* Navbar */}
@@ -17,10 +25,33 @@ export default function HomePage() {
           <button className="module-btn">M4</button>
         </div>
 
-        {/* Existing Buttons */}
+        {/* Existing Buttons + Module 4 Notification Bell */}
         <div className="nav-buttons">
-          <button className="btn-outline">Login</button>
-          <button className="btn-primary">Get Started</button>
+          {/* Pass real userId from auth context; fall back to 1 if not logged in */}
+          <NotificationBell userId={user ? user.id : 1} />
+
+          {user ? (
+            <>
+              <span className="nav-user-name">{user.name}</span>
+              {user.role === "ADMIN" && (
+                <button
+                  className="nav-role-badge"
+                  onClick={() => navigate("/admin")}
+                  style={{ cursor: "pointer", border: "none" }}
+                >
+                  Admin Panel
+                </button>
+              )}
+              <button className="btn-outline" onClick={logout}>Logout</button>
+            </>
+          ) : (
+            <button
+              className="btn-outline"
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </button>
+          )}
         </div>
       </nav>
 
@@ -41,7 +72,14 @@ export default function HomePage() {
 
         <div className="hero-buttons">
           <button className="btn-primary">Explore Features</button>
-          <button className="btn-outline">Login with Google</button>
+          {!user && (
+            <button
+              className="btn-outline"
+              onClick={() => navigate("/login")}
+            >
+              Login with Google
+            </button>
+          )}
         </div>
       </section>
 
