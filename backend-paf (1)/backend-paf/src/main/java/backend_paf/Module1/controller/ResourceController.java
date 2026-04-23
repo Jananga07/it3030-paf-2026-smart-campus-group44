@@ -2,12 +2,15 @@ package backend_paf.Module1.controller;
 
 import backend_paf.Module1.dto.ResourceRequestDTO;
 import backend_paf.Module1.dto.ResourceResponseDTO;
+import backend_paf.Module1.enums.ResourceStatus;
 import backend_paf.Module1.service.ResourceService;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -21,41 +24,60 @@ public class ResourceController {
         this.resourceService = resourceService;
     }
 
-    // CREATE
     @PostMapping
     public ResponseEntity<ResourceResponseDTO> createResource(@Valid @RequestBody ResourceRequestDTO requestDTO) {
-        ResourceResponseDTO created = resourceService.createResource(requestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resourceService.createResource(requestDTO));
     }
 
-    // READ ALL
     @GetMapping
     public ResponseEntity<List<ResourceResponseDTO>> getAllResources() {
-        List<ResourceResponseDTO> resources = resourceService.getAllResources();
-        return ResponseEntity.ok(resources);
+        return ResponseEntity.ok(resourceService.getAllResources());
     }
 
-    // READ ONE
     @GetMapping("/{id}")
     public ResponseEntity<ResourceResponseDTO> getResourceById(@PathVariable Long id) {
-        ResourceResponseDTO resource = resourceService.getResourceById(id);
-        return ResponseEntity.ok(resource);
+        return ResponseEntity.ok(resourceService.getResourceById(id));
     }
 
-    // UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<ResourceResponseDTO> updateResource(
             @PathVariable Long id,
             @Valid @RequestBody ResourceRequestDTO requestDTO) {
-        ResourceResponseDTO updated = resourceService.updateResource(id, requestDTO);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(resourceService.updateResource(id, requestDTO));
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteResource(@PathVariable Long id) {
         resourceService.deleteResource(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ResourceResponseDTO>> searchResources(
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) Integer capacity,
+            @RequestParam(required = false) ResourceStatus status) {
+        return ResponseEntity.ok(resourceService.searchResources(type, location, capacity, status));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ResourceResponseDTO> updateStatus(
+            @PathVariable Long id,
+            @RequestParam ResourceStatus status) {
+        return ResponseEntity.ok(resourceService.updateStatus(id, status));
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<ResourceResponseDTO>> getByStatus(@PathVariable ResourceStatus status) {
+        return ResponseEntity.ok(resourceService.getResourcesByStatus(status));
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<ResourceResponseDTO>> getAvailableResources(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return ResponseEntity.ok(resourceService.getAvailableResources(from, to));
     }
 }
 
