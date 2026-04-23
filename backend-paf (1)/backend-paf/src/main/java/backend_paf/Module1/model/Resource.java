@@ -2,7 +2,7 @@ package backend_paf.Module1.model;
 
 import backend_paf.Module1.enums.ResourceStatus;
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "resources")
@@ -17,8 +17,8 @@ public class Resource {
     private String location;
     private Integer capacity;
     private String description;
-    private LocalDate availableFrom;
-    private LocalDate availableTo;
+    private LocalTime availableFrom;
+    private LocalTime availableTo;
 
     @Enumerated(EnumType.STRING)
     private ResourceStatus status;
@@ -31,8 +31,8 @@ public class Resource {
     public String getLocation() { return location; }
     public Integer getCapacity() { return capacity; }
     public String getDescription() { return description; }
-    public LocalDate getAvailableFrom() { return availableFrom; }
-    public LocalDate getAvailableTo() { return availableTo; }
+    public LocalTime getAvailableFrom() { return availableFrom; }
+    public LocalTime getAvailableTo() { return availableTo; }
     public ResourceStatus getStatus() { return status; }
 
     public void setId(Long id) { this.id = id; }
@@ -41,7 +41,7 @@ public class Resource {
     public void setLocation(String location) { this.location = location; }
     public void setCapacity(Integer capacity) { this.capacity = capacity; }
     public void setDescription(String description) { this.description = description; }
-    public void setAvailableFrom(LocalDate availableFrom) { this.availableFrom = availableFrom; }
-    public void setAvailableTo(LocalDate availableTo) { this.availableTo = availableTo; }
+    public void setAvailableFrom(LocalTime availableFrom) { this.availableFrom = availableFrom; }
+    public void setAvailableTo(LocalTime availableTo) { this.availableTo = availableTo; }
     public void setStatus(ResourceStatus status) { this.status = status; }
 }
