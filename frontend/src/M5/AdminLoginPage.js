@@ -122,7 +122,7 @@ export default function AdminLoginPage() {
 
       saveToken(data.token);
       setUser(data.user);
-      navigate("/admin/auth", { replace: true });
+      navigate("/admin-dashboard", { replace: true });
     } catch {
       setError("Network error. Please try again.");
     } finally {

@@ -34,7 +34,7 @@ export default function AuthCallback() {
         setUser(user);
         // ADMIN users go to admin panel, USER users go to home
         if (user && user.role === "ADMIN") {
-          navigate("/admin/auth", { replace: true });
+          navigate("/admin-dashboard", { replace: true });
         } else {
           navigate("/", { replace: true });
         }

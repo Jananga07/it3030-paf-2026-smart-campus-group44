@@ -62,7 +62,7 @@ export default function HomePage() {
               {user.role === "ADMIN" && (
                 <button
                   className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold px-4 py-2 rounded-xl transition duration-200 text-sm"
-                  onClick={() => navigate("/admin/auth")}
+                  onClick={() => navigate("/admin-dashboard")}
                 >
                   Admin Panel
                 </button>
