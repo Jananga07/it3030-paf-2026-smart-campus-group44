@@ -13,7 +13,7 @@ export default function HomePage() {
       title: "Resource Booking",
       desc:  "Easily book lecture halls, labs, and equipment with real-time availability.",
       icon:  "📅",
-      route: "/resources",
+      route: null,
     },
     {
       title: "Incident Reporting",
@@ -33,18 +33,14 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100">
       <section className="text-center py-24 px-6">
         <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
           className="text-5xl font-extrabold text-gray-800 leading-tight"
         >
           Smart Campus <span className="text-indigo-600">Operations Hub</span>
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.6 }}
           className="mt-5 text-lg text-gray-500 max-w-xl mx-auto"
         >
           Manage facilities, book resources, report incidents, and stay updated
@@ -52,24 +48,17 @@ export default function HomePage() {
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }}
           className="mt-8 flex justify-center gap-4 flex-wrap"
         >
-          <button
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition duration-200 shadow-md"
-            onClick={() => navigate("/resources")}
-          >
+          <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition duration-200 shadow-md">
             Explore Features
           </button>
 
           {/* Module 5 – show Login or user info based on auth state */}
           {user ? (
             <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-gray-700">
-                👋 {user.name}
-              </span>
+              <span className="text-sm font-medium text-gray-700">👋 {user.name}</span>
               {user.role === "ADMIN" && (
                 <button
                   className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold px-4 py-2 rounded-xl transition duration-200 text-sm"
@@ -98,9 +87,7 @@ export default function HomePage() {
 
       <section className="max-w-5xl mx-auto px-6 pb-20 grid grid-cols-1 sm:grid-cols-3 gap-6">
         {features.map((f, i) => (
-          <motion.div
-            key={i}
-            whileHover={{ scale: 1.04 }}
+          <motion.div key={i} whileHover={{ scale: 1.04 }}
             onClick={() => f.route && navigate(f.route)}
             className={`bg-white rounded-2xl shadow-md p-7 border border-indigo-50 hover:shadow-lg transition duration-200${f.route ? " cursor-pointer" : ""}`}
           >
