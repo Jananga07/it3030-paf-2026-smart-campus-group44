@@ -6,6 +6,8 @@ import backend_paf.Module3.model.TicketStatus;
 import backend_paf.Module3.model.User;
 import backend_paf.Module3.repository.TicketRepository;
 import backend_paf.Module3.repository.UserRepository;
+// Module 4 – notification integration
+import backend_paf.Module4.service.NotificationEventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +27,10 @@ public class TicketService {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    // Module 4 – triggers in-app notifications on ticket status changes
+    @Autowired
+    private NotificationEventService notificationEventService;
 
     public Ticket createTicket(Long userId, String title, String description, String category, String location, String email, String contactInfo, String priorityLevel, MultipartFile[] evidences) {
         if (description == null || description.length() < 10 || description.length() > 1000) {
@@ -91,7 +97,15 @@ public class TicketService {
 
         ticket.setStatus(newStatus);
         ticket.setStatusNote(note);
-        return ticketRepository.save(ticket);
+        Ticket saved = ticketRepository.save(ticket);
+
+        // Module 4 – notify ticket owner of status change
+        try {
+            notificationEventService.notifyTicketStatusChanged(
+                    ticket.getUser().getId(), ticketId, newStatus.name());
+        } catch (Exception ignored) { /* don't fail ticket update if notification fails */ }
+
+        return saved;
     }
 
     public Ticket addResolutionNotes(Long ticketId, String notes, Long userId) {

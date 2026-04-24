@@ -16,6 +16,7 @@ export default function AdminSidebar() {
     { icon: "📋", label: "Booking Management", path: "/admin" },
     { icon: "🏫", label: "Resources",          path: "/admin/resources" },
     { icon: "📊", label: "Analytics",          path: "/analytics" },
+    { icon: "🎫", label: "Ticket Categories",  path: "/admin/ticket-categories" },
     { icon: "👥", label: "User Management",    path: "/admin/auth" },
   ];
 
