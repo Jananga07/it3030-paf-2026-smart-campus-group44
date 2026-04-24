@@ -1,8 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
 export default function HomePage() {
+  const navigate = useNavigate();
+
   return (
     <div>
       {/* Navbar */}
@@ -13,14 +16,14 @@ export default function HomePage() {
         <div className="nav-modules">
           <button className="module-btn">M1</button>
           <button className="module-btn">M2</button>
-          <button className="module-btn">M3</button>
+          <button className="module-btn" onClick={() => navigate('/m3')}>M3</button>
           <button className="module-btn">M4</button>
         </div>
 
         {/* Existing Buttons */}
         <div className="nav-buttons">
-          <button className="btn-outline">Login</button>
-          <button className="btn-primary">Get Started</button>
+          <button className="btn-outline" onClick={() => navigate('/m3')}>Login</button>
+          <button className="btn-primary" onClick={() => navigate('/m3')}>Get Started</button>
         </div>
       </nav>
 
@@ -40,8 +43,8 @@ export default function HomePage() {
         </p>
 
         <div className="hero-buttons">
-          <button className="btn-primary">Explore Features</button>
-          <button className="btn-outline">Login with Google</button>
+          <button className="btn-primary" onClick={() => navigate('/m3')}>Explore Features</button>
+          <button className="btn-outline" onClick={() => navigate('/m3')}>Login with Google</button>
         </div>
       </section>
 
