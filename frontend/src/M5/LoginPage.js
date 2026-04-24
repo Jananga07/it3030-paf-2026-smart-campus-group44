@@ -217,7 +217,7 @@ export default function LoginPage() {
               {/* Google button */}
               <button className="login-google-btn"
                 onClick={async () => {
-                  // Check backend is reachable before redirecting
+                  setOauthError(""); // clear previous error
                   try {
                     await fetch("http://localhost:8080/api/auth/me", { method: "GET" });
                   } catch {

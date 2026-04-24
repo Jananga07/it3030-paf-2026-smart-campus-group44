@@ -8,23 +8,113 @@ import "./LoginPage.css";
  * AdminLoginPage – Module 5 (Member 5)
  * Route: /admin-login
  *
- * Admin-only login page.
- * - Email + password only (no Google, no register)
- * - On success: redirects to /admin/auth (ADMIN role required)
- * - Non-admin credentials show an error
+ * Admin login + register page.
+ * - Register: creates account, then admin must be promoted via H2 console
+ * - Login: email + password, ADMIN role only
  */
 
 const API = "http://localhost:8080/api/auth";
 
+// ── Register form ─────────────────────────────────────────────────────────────
+function AdminRegisterForm({ onRegistered }) {
+  const [name, setName]         = useState("");
+  const [email, setEmail]       = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm]   = useState("");
+  const [error, setError]       = useState("");
+  const [success, setSuccess]   = useState("");
+  const [loading, setLoading]   = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(""); setSuccess("");
+    if (password !== confirm) { setError("Passwords do not match."); return; }
+    if (password.length < 6)  { setError("Password must be at least 6 characters."); return; }
+    setLoading(true);
+    try {
+      const res  = await fetch(`${API}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "Registration failed."); return; }
+
+      setSuccess(
+        `Account created for ${email}. ` +
+        `To grant admin access, open http://localhost:8080/h2-console and run: ` +
+        `UPDATE APP_USERS SET ROLE='ADMIN' WHERE EMAIL='${email}';`
+      );
+      onRegistered(email);
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form className="auth-form" onSubmit={handleSubmit}>
+      <div className="auth-field">
+        <label>Full Name</label>
+        <input type="text" required value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Admin Name" />
+      </div>
+      <div className="auth-field">
+        <label>Email</label>
+        <input type="email" required value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="admin@example.com" />
+      </div>
+      <div className="auth-field">
+        <label>Password</label>
+        <input type="password" required value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Min. 6 characters" />
+      </div>
+      <div className="auth-field">
+        <label>Confirm Password</label>
+        <input type="password" required value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          placeholder="Repeat password" />
+      </div>
+      {error   && <div className="auth-error">{error}</div>}
+      {success && (
+        <div style={{
+          background: "#f0fdf4", border: "1px solid #bbf7d0",
+          color: "#15803d", borderRadius: 8, padding: "10px 12px",
+          fontSize: 12, lineHeight: 1.6, textAlign: "left",
+        }}>
+          ✅ <strong>Account created!</strong><br />
+          To promote to Admin, open{" "}
+          <a href="http://localhost:8080/h2-console" target="_blank" rel="noreferrer"
+            style={{ color: "#4f46e5" }}>H2 Console</a>{" "}
+          and run:<br />
+          <code style={{ background: "#dcfce7", padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>
+            UPDATE APP_USERS SET ROLE='ADMIN' WHERE EMAIL='{email}';
+          </code><br />
+          Then switch to <strong>Sign In</strong> tab to login.
+        </div>
+      )}
+      <button type="submit" className="auth-submit-btn" disabled={loading}>
+        {loading ? "Creating account…" : "Create Admin Account"}
+      </button>
+    </form>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
 export default function AdminLoginPage() {
-  const navigate       = useNavigate();
-  const { setUser }    = useAuth();
+  const navigate    = useNavigate();
+  const { setUser } = useAuth();
+  const [tab, setTab]           = useState("signin");
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
   const [error, setError]       = useState("");
   const [loading, setLoading]   = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -37,9 +127,8 @@ export default function AdminLoginPage() {
       const data = await res.json();
       if (!res.ok) { setError(data.error || "Login failed."); return; }
 
-      // Only allow ADMIN role through this page
       if (data.user.role !== "ADMIN") {
-        setError("Access denied. This login is for administrators only.");
+        setError("Access denied. This account does not have admin privileges.");
         return;
       }
 
@@ -60,7 +149,7 @@ export default function AdminLoginPage() {
         <button className="login-page-back-btn" onClick={() => navigate("/")}>
           ← Back
         </button>
-        <h1 className="login-page-title">🛡️ Admin Login</h1>
+        <h1 className="login-page-title">🛡️ Admin Portal</h1>
       </div>
 
       <div className="login-page-content">
@@ -68,31 +157,52 @@ export default function AdminLoginPage() {
           <div className="login-card-icon">🔒</div>
           <h2 className="login-card-heading">Administrator Access</h2>
           <p className="login-card-sub">
-            This area is restricted to system administrators only.
+            Restricted to system administrators only.
           </p>
 
-          <form className="auth-form" onSubmit={handleSubmit}>
-            <div className="auth-field">
-              <label>Admin Email</label>
-              <input
-                type="email" required value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@example.com"
-              />
-            </div>
-            <div className="auth-field">
-              <label>Password</label>
-              <input
-                type="password" required value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-              />
-            </div>
-            {error && <div className="auth-error">{error}</div>}
-            <button type="submit" className="auth-submit-btn" disabled={loading}>
-              {loading ? "Signing in…" : "Sign In as Admin"}
+          {/* Tabs */}
+          <div className="auth-tabs">
+            <button className={`auth-tab${tab === "signin" ? " active" : ""}`}
+              onClick={() => { setTab("signin"); setError(""); }}>
+              Sign In
             </button>
-          </form>
+            <button className={`auth-tab${tab === "register" ? " active" : ""}`}
+              onClick={() => { setTab("register"); setError(""); }}>
+              Register
+            </button>
+          </div>
+
+          {/* Sign In form */}
+          {tab === "signin" && (
+            <form className="auth-form" onSubmit={handleLogin}>
+              <div className="auth-field">
+                <label>Admin Email</label>
+                <input type="email" required value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@example.com" />
+              </div>
+              <div className="auth-field">
+                <label>Password</label>
+                <input type="password" required value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••" />
+              </div>
+              {error && <div className="auth-error">{error}</div>}
+              <button type="submit" className="auth-submit-btn" disabled={loading}>
+                {loading ? "Signing in…" : "Sign In as Admin"}
+              </button>
+            </form>
+          )}
+
+          {/* Register form */}
+          {tab === "register" && (
+            <AdminRegisterForm
+              onRegistered={(registeredEmail) => {
+                setEmail(registeredEmail);
+                setTab("signin");
+              }}
+            />
+          )}
 
           <p style={{ marginTop: 16, fontSize: 12, color: "#9ca3af", textAlign: "center" }}>
             Not an admin?{" "}
