@@ -27,14 +27,6 @@ export default function HomePage() {
       icon:  "🔔",
       route: "/notifications",
     },
-
-export default function HomePage() {
-  const navigate = useNavigate();
-
-  const features = [
-    { title: "Resource Booking",     desc: "Easily book lecture halls, labs, and equipment with real-time availability.", icon: "📅", route: null },
-    { title: "Incident Reporting",   desc: "Report issues with images and track resolution progress efficiently.",        icon: "🛠️", route: null },
-    { title: "Smart Notifications",  desc: "Get instant updates on bookings, tickets, and system activities.",            icon: "🔔", route: "/notifications" },
   ];
 
   return (
