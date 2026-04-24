@@ -1,6 +1,31 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import "./Home.css";
+
+export default function HomePage() {
+  const navigate = useNavigate();
+
+  return (
+    <div>
+      {/* Navbar */}
+      <nav className="navbar">
+        <h1 className="logo">Smart Campus</h1>
+
+        {/* NEW: Module Buttons */}
+        <div className="nav-modules">
+          <button className="module-btn">M1</button>
+          <button className="module-btn">M2</button>
+          <button className="module-btn" onClick={() => navigate('/m3')}>M3</button>
+          <button className="module-btn">M4</button>
+        </div>
+
+        {/* Existing Buttons */}
+        <div className="nav-buttons">
+          <button className="btn-outline" onClick={() => navigate('/m3')}>Login</button>
+          <button className="btn-primary" onClick={() => navigate('/m3')}>Get Started</button>
+        </div>
+      </nav>
 // Module 5 – Auth state (login/logout awareness)
 import { useAuth } from "../M5/useAuth";
 
@@ -37,6 +62,7 @@ export default function HomePage() {
     { title: "Smart Notifications",  desc: "Get instant updates on bookings, tickets, and system activities.",            icon: "🔔", route: "/notifications" },
   ];
 
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100">
       <section className="text-center py-24 px-6">
@@ -63,6 +89,10 @@ export default function HomePage() {
             Explore Features
           </button>
 
+        <div className="hero-buttons">
+          <button className="btn-primary" onClick={() => navigate('/m3')}>Explore Features</button>
+          <button className="btn-outline" onClick={() => navigate('/m3')}>Login with Google</button>
+        </div>
           {/* Module 5 – show Login or user info based on auth state */}
           {user ? (
             <div className="flex items-center gap-3">
