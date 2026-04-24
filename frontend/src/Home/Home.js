@@ -85,7 +85,7 @@ export default function HomePage() {
               </button>
               <button
                 className="border-2 border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white font-semibold px-6 py-3 rounded-xl transition duration-200"
-                onClick={() => navigate("/login")}
+                onClick={() => navigate("/login?role=admin")}
               >
                 Admin Login
               </button>

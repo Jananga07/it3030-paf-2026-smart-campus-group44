@@ -151,8 +151,15 @@ export default function LoginPage() {
 
   const handleSuccess = (loggedInUser) => {
     setUser(loggedInUser);
-    navigate("/", { replace: true }); // go to home after email login
+    // ADMIN → admin dashboard, USER → home
+    if (loggedInUser.role === "ADMIN") {
+      navigate("/admin-dashboard", { replace: true });
+    } else {
+      navigate("/", { replace: true });
+    }
   };
+
+  const isAdminMode = new URLSearchParams(location.search).get("role") === "admin";
 
   return (
     <div className="login-page">
@@ -161,13 +168,17 @@ export default function LoginPage() {
         <button className="login-page-back-btn" onClick={() => navigate("/")}>
           ← Back
         </button>
-        <h1 className="login-page-title">🔐 Account</h1>
+        <h1 className="login-page-title">
+          {isAdminMode ? "🛡️ Admin Login" : "🔐 Account"}
+        </h1>
       </div>
 
       <div className="login-page-content">
         <div className="login-card">
-          <div className="login-card-icon">🎓</div>
-          <h2 className="login-card-heading">Smart Campus</h2>
+          <div className="login-card-icon">{isAdminMode ? "🔒" : "🎓"}</div>
+          <h2 className="login-card-heading">
+            {isAdminMode ? "Administrator Access" : "Smart Campus"}
+          </h2>
 
           {/* ── Logged-in state ── */}
           {user ? (
