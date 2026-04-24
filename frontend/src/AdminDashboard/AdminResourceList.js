@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ResourceFormModal from "../M1/components/ResourceFormModal";
 import { getAllResources, updateResource, deleteResource } from "../M1/api/resourceApi";
+import AdminSidebar from "./AdminSidebar";
 
 export default function AdminResourceList() {
   const [resources, setResources] = useState([]);
@@ -56,7 +57,9 @@ export default function AdminResourceList() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #eef2ff 0%, #dbeafe 100%)" }}>
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      <AdminSidebar />
+      <div style={{ flex: 1, minHeight: "100vh", background: "linear-gradient(135deg, #eef2ff 0%, #dbeafe 100%)" }}>
       {/* Header */}
       <div style={{ background: "#fff", borderBottom: "1px solid #e0e7ff", padding: "18px 36px", display: "flex", alignItems: "center", gap: 16 }}>
         <div>
@@ -196,6 +199,7 @@ export default function AdminResourceList() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </div>
   );
 }
