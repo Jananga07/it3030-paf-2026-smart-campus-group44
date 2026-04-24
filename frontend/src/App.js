@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 
 // Shared layout
 import Navbar from './M2/components/Navbar';
@@ -30,10 +30,15 @@ import AdminLoginPage from './M5/AdminLoginPage';
 import AdminPage      from './M5/AdminPage';
 import ProtectedRoute from './M5/ProtectedRoute';
 
+// Pages that should NOT show the Navbar
+const NO_NAVBAR_ROUTES = ["/login", "/admin-login", "/auth/callback"];
+
 function App() {
+  const { pathname } = useLocation();
+  const showNavbar = !NO_NAVBAR_ROUTES.includes(pathname);
   return (
     <>
-      <Navbar />
+      {showNavbar && <Navbar />}
       <Routes>
         {/* Public routes */}
         <Route path="/"              element={<Home />} />

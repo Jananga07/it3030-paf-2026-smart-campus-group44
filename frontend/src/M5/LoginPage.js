@@ -216,7 +216,16 @@ export default function LoginPage() {
 
               {/* Google button */}
               <button className="login-google-btn"
-                onClick={() => { window.location.href = GOOGLE_URL; }}>
+                onClick={async () => {
+                  // Check backend is reachable before redirecting
+                  try {
+                    await fetch("http://localhost:8080/api/auth/me", { method: "GET" });
+                  } catch {
+                    setOauthError("Cannot connect to server. Make sure the backend is running on port 8080.");
+                    return;
+                  }
+                  window.location.href = GOOGLE_URL;
+                }}>
                 <img
                   src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                   alt="Google" className="login-google-icon" />
