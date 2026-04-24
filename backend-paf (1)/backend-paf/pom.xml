@@ -39,12 +39,17 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
+<<<<<<< HEAD
 		<!-- Mail (Module 2 – booking confirmation emails) -->
+=======
+		<!-- Mail -->
+>>>>>>> origin/Development-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
+<<<<<<< HEAD
 		<!-- Module 5 – Authentication & Authorization -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -73,6 +78,8 @@
 			<scope>runtime</scope>
 		</dependency>
 
+=======
+>>>>>>> origin/Development-
 		<!-- MySQL -->
 		<dependency>
 			<groupId>com.mysql</groupId>
@@ -80,6 +87,7 @@
 			<scope>runtime</scope>
 		</dependency>
 
+<<<<<<< HEAD
 		<!-- H2 in-memory database – local dev / testing -->
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -92,10 +100,24 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
+=======
+		<!-- H2 -->
 		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+>>>>>>> origin/Development-
+		</dependency>
+
+		<!-- Test -->
+		<dependency>
+<<<<<<< HEAD
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
+=======
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+>>>>>>> origin/Development-
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
