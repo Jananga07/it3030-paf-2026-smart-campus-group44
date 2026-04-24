@@ -5,8 +5,6 @@ import {
   markAllAsRead,
 } from "./notificationService";
 import "./NotificationPanel.css";
-// Module 5 – use real userId from auth context
-import { useAuth } from "../M5/AuthContext";
 
 /**
  * NotificationPanel – Module 4 (Member 4)
@@ -21,8 +19,8 @@ import { useAuth } from "../M5/AuthContext";
  *   onCountUpdate(function) – called with new unread count after actions
  */
 export default function NotificationPanel({ onClose, onViewAll, onCountUpdate }) {
-  const { user } = useAuth();
-  const userId = user ? user.id : 1;
+  // Use userId from localStorage (set by booking system) or default to 1
+  const userId = Number(localStorage.getItem("sc_userId") || 1);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

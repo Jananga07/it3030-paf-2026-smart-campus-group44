@@ -1,9 +1,11 @@
 /**
  * Notification Admin API Service – Module 4 (Member 4)
- * Admin-only API calls for notification management.
  */
 
-import { getAuthHeader } from "../M5/authService";
+function getAuthHeader() {
+  const token = localStorage.getItem("sc_token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 const BASE_URL = "http://localhost:8080/api/notifications";
 

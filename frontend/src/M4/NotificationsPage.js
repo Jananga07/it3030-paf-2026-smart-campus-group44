@@ -7,22 +7,21 @@ import {
   deleteNotification,
 } from "./notificationService";
 import "./NotificationsPage.css";
-// Module 5 – use real userId from auth context
-import { useAuth } from "../M5/AuthContext";
 
-// Maps notification type enum to a readable emoji icon
 const TYPE_ICON = {
-  BOOKING_APPROVED:    "✅",
-  BOOKING_REJECTED:    "❌",
+  BOOKING_APPROVED:      "✅",
+  BOOKING_REJECTED:      "❌",
+  BOOKING_CANCELLED:     "🚫",
   TICKET_STATUS_CHANGED: "🎫",
-  NEW_TICKET_COMMENT:  "💬",
+  NEW_TICKET_COMMENT:    "💬",
 };
 
 const TYPE_LABEL = {
-  BOOKING_APPROVED:    "Booking",
-  BOOKING_REJECTED:    "Booking",
+  BOOKING_APPROVED:      "Booking",
+  BOOKING_REJECTED:      "Booking",
+  BOOKING_CANCELLED:     "Booking",
   TICKET_STATUS_CHANGED: "Ticket",
-  NEW_TICKET_COMMENT:  "Ticket",
+  NEW_TICKET_COMMENT:    "Ticket",
 };
 
 /**
@@ -34,8 +33,7 @@ const TYPE_LABEL = {
  * Props: None (userId resolved from auth context – Module 5 integration)
  */
 export default function NotificationsPage() {
-  const { user } = useAuth();
-  const userId = user ? user.id : 1;
+  const userId = Number(localStorage.getItem("sc_userId") || 1);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
