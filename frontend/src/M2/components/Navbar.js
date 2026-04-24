@@ -12,10 +12,12 @@ function Navbar() {
 
   // Links visible only when logged in
   const userLinks = [
-    { to: '/resources',   label: 'Resources' },
-    { to: '/bookings',    label: 'All Bookings' },
-    { to: '/my-bookings', label: 'My Bookings' },
-    { to: '/book',        label: 'New Booking' },
+    { to: '/resources',      label: 'Resources' },
+    { to: '/bookings',       label: 'All Bookings' },
+    { to: '/my-bookings',    label: 'My Bookings' },
+    { to: '/book',           label: 'New Booking' },
+    { to: '/tickets',        label: '🎫 Tickets' },
+    { to: '/tickets/create', label: '+ Add Ticket' },
   ];
 
   // Admin-only link
