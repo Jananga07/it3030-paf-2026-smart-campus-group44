@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import "./index.css";
 import App from "./App";
 // Module 5 – Auth context wraps the whole app
 import { AuthProvider } from "./M5/AuthContext";
