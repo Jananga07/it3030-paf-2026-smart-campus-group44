@@ -31,7 +31,7 @@ import AdminPage      from './M5/AdminPage';
 import ProtectedRoute from './M5/ProtectedRoute';
 
 // Pages that should NOT show the Navbar
-const NO_NAVBAR_ROUTES = ["/login", "/admin-login", "/auth/callback", "/admin-dashboard"];
+const NO_NAVBAR_ROUTES = ["/login", "/admin-login", "/auth/callback", "/admin-dashboard", "/admin", "/admin/resources", "/analytics"];
 
 function App() {
   const { pathname } = useLocation();
