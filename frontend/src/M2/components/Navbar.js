@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import NotificationBell from '../../M4/NotificationBell';
 
 const links = [
   { to: '/', label: 'Home' },
@@ -32,6 +33,8 @@ function Navbar() {
               {l.label}
             </Link>
           ))}
+          {/* Module 4 – Notification Bell */}
+          <NotificationBell />
         </div>
 
         <button className="md:hidden text-gray-500 hover:text-indigo-600" onClick={() => setOpen(!open)} aria-label="Toggle menu">

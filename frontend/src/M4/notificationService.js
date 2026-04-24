@@ -1,12 +1,11 @@
 /**
  * Notification API Service – Module 4 (Member 4)
- * All API calls are scoped to the authenticated userId.
- *
- * Module 5 integration: getAuthHeader() attaches the JWT Bearer token
- * so the backend can authenticate the request.
  */
 
-import { getAuthHeader } from "../M5/authService";
+function getAuthHeader() {
+  const token = localStorage.getItem("sc_token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 const BASE_URL = "http://localhost:8080/api/notifications";
 

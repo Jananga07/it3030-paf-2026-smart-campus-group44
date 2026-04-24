@@ -1,11 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
+  const navigate = useNavigate();
+
   const features = [
-    { title: "Resource Booking", desc: "Easily book lecture halls, labs, and equipment with real-time availability.", icon: "📅" },
-    { title: "Incident Reporting", desc: "Report issues with images and track resolution progress efficiently.", icon: "🛠️" },
-    { title: "Smart Notifications", desc: "Get instant updates on bookings, tickets, and system activities.", icon: "🔔" },
+    { title: "Resource Booking",     desc: "Easily book lecture halls, labs, and equipment with real-time availability.", icon: "📅", route: null },
+    { title: "Incident Reporting",   desc: "Report issues with images and track resolution progress efficiently.",        icon: "🛠️", route: null },
+    { title: "Smart Notifications",  desc: "Get instant updates on bookings, tickets, and system activities.",            icon: "🔔", route: "/notifications" },
   ];
 
   return (
@@ -39,7 +42,8 @@ export default function HomePage() {
       <section className="max-w-5xl mx-auto px-6 pb-20 grid grid-cols-1 sm:grid-cols-3 gap-6">
         {features.map((f, i) => (
           <motion.div key={i} whileHover={{ scale: 1.04 }}
-            className="bg-white rounded-2xl shadow-md p-7 border border-indigo-50 hover:shadow-lg transition duration-200"
+            onClick={() => f.route && navigate(f.route)}
+            className={`bg-white rounded-2xl shadow-md p-7 border border-indigo-50 hover:shadow-lg transition duration-200${f.route ? " cursor-pointer" : ""}`}
           >
             <div className="text-3xl mb-3">{f.icon}</div>
             <h3 className="text-lg font-bold text-indigo-600 mb-2">{f.title}</h3>

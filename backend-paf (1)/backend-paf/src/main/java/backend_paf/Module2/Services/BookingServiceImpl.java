@@ -5,6 +5,10 @@ import backend_paf.Module2.Model.Booking;
 import backend_paf.Module2.Repository.BookingRepository;
 import backend_paf.Module2.dto.BookingRequest;
 import backend_paf.Module2.dto.BookingResponse;
+// Module 4 integration – notification triggers
+import backend_paf.Module4.service.NotificationEventService;
+// Module 1 integration – resource name for notification messages
+import backend_paf.Module1.repository.ResourceRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,10 +19,19 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final EmailService emailService;
+    // Module 4 – triggers in-app notifications on booking status changes
+    private final NotificationEventService notificationEventService;
+    // Module 1 – used to look up resource name for richer notification messages
+    private final ResourceRepository resourceRepository;
 
-    public BookingServiceImpl(BookingRepository bookingRepository, EmailService emailService) {
-        this.bookingRepository = bookingRepository;
-        this.emailService = emailService;
+    public BookingServiceImpl(BookingRepository bookingRepository,
+                              EmailService emailService,
+                              NotificationEventService notificationEventService,
+                              ResourceRepository resourceRepository) {
+        this.bookingRepository         = bookingRepository;
+        this.emailService              = emailService;
+        this.notificationEventService  = notificationEventService;
+        this.resourceRepository        = resourceRepository;
     }
 
     private BookingResponse toReponse(Booking booking) {
@@ -135,6 +148,12 @@ public class BookingServiceImpl implements BookingService {
                         "Smart Campus Operations Hub"
         );
 
+        // Module 4 – send in-app notification to the user
+        String resourceName = resourceRepository.findById(booking.getResourceId())
+                .map(r -> r.getName()).orElse("Resource #" + booking.getResourceId());
+        notificationEventService.notifyBookingApproved(
+                booking.getUserId(), booking.getId(), resourceName);
+
         return response;
     }
 
@@ -163,6 +182,12 @@ public class BookingServiceImpl implements BookingService {
                         "Smart Campus Operations Hub"
         );
 
+        // Module 4 – send in-app notification to the user
+        String resourceName = resourceRepository.findById(booking.getResourceId())
+                .map(r -> r.getName()).orElse("Resource #" + booking.getResourceId());
+        notificationEventService.notifyBookingRejected(
+                booking.getUserId(), booking.getId(), resourceName);
+
         return response;
     }
 
@@ -174,7 +199,15 @@ public class BookingServiceImpl implements BookingService {
             throw new RuntimeException("Only approved bookings can be cancelled");
         }
         booking.setStatus(BookingStatus.CANCELLED);
-        return toReponse(bookingRepository.save(booking));
+        BookingResponse response = toReponse(bookingRepository.save(booking));
+
+        // Module 4 – send in-app notification to the user
+        String resourceName = resourceRepository.findById(booking.getResourceId())
+                .map(r -> r.getName()).orElse("Resource #" + booking.getResourceId());
+        notificationEventService.notifyBookingCancelled(
+                booking.getUserId(), booking.getId(), resourceName);
+
+        return response;
     }
 
     @Override

@@ -15,6 +15,8 @@ import Analytics from './M2/pages/Analytics';
 import CheckIn from './M2/pages/CheckIn';
 import AdminDashboard from './AdminDashboard/AdminDashboard';
 import AdminResourceList from './AdminDashboard/AdminResourceList';
+// Module 4 – Notifications page
+import NotificationsPage from './M4/NotificationsPage';
 
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
         <Route path="/resources" element={<ResourceCatalogue />} />
         <Route path="/resources/:id" element={<ResourceDetails />} />
         <Route path="/admin/resources" element={<AdminResourceList />} />
+        {/* Module 4 – Notifications */}
+        <Route path="/notifications" element={<NotificationsPage />} />
 
       </Routes>
     </>
