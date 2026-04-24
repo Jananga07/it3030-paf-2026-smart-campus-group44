@@ -44,6 +44,18 @@ export default function AdminDashboard() {
       action: () => setShowAddResource(true),
       highlight: true,
     },
+    {
+      title: "User Management",
+      desc:  "View registered users, manage roles and promote admins.",
+      icon:  "👥",
+      action: () => navigate("/admin/auth"),
+    },
+    {
+      title: "Analytics",
+      desc:  "View booking trends, peak hours and resource usage statistics.",
+      icon:  "📊",
+      action: () => navigate("/analytics"),
+    },
   ];
 
   return (

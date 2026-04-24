@@ -31,6 +31,12 @@ import LoginPage      from './M5/LoginPage';
 import AdminPage      from './M5/AdminPage';
 import ProtectedRoute from './M5/ProtectedRoute';
 
+<<<<<<< Updated upstream
+=======
+// Pages that should NOT show the Navbar
+const NO_NAVBAR_ROUTES = ["/login", "/admin-login", "/auth/callback", "/admin-dashboard", "/admin", "/admin/resources", "/analytics", "/admin/auth"];
+
+>>>>>>> Stashed changes
 function App() {
   return (
     <>

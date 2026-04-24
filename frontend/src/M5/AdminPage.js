@@ -4,6 +4,8 @@ import { getAuthHeader } from "./authService";
 import "./AdminPage.css";
 // Module 4 – Notifications admin panel
 import AdminNotificationsPanel from "../M4/AdminNotificationsPanel";
+// Shared admin sidebar
+import AdminSidebar from "../AdminDashboard/AdminSidebar";
 
 /**
  * AdminPage – Module 5 (Member 5)
@@ -72,14 +74,13 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="admin-page">
-      {/* Page header – mirrors notif-page-header */}
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      <AdminSidebar />
+      <div className="admin-page" style={{ flex: 1 }}>
+      {/* Page header */}
       <div className="admin-page-header">
-        <button className="admin-page-back-btn" onClick={() => navigate(-1)}>
-          ← Back
-        </button>
         <h1 className="admin-page-title">
-          🛡️ Admin – User Management
+          👥 User Management
         </h1>
       </div>
 
@@ -158,6 +159,7 @@ export default function AdminPage() {
 
         {/* Module 4 – Notifications admin panel */}
         <AdminNotificationsPanel />
+      </div>
       </div>
     </div>
   );
