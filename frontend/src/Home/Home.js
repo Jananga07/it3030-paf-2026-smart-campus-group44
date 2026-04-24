@@ -1,6 +1,32 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+// Module 5 – Auth state (login/logout awareness)
+import { useAuth } from "../M5/useAuth";
+
+export default function HomePage() {
+  const navigate         = useNavigate();
+  const { user, logout } = useAuth();
+
+  const features = [
+    {
+      title: "Resource Booking",
+      desc:  "Easily book lecture halls, labs, and equipment with real-time availability.",
+      icon:  "📅",
+      route: null,
+    },
+    {
+      title: "Incident Reporting",
+      desc:  "Report issues with images and track resolution progress efficiently.",
+      icon:  "🛠️",
+      route: null,
+    },
+    {
+      title: "Smart Notifications",
+      desc:  "Get instant updates on bookings, tickets, and system activities.",
+      icon:  "🔔",
+      route: "/notifications",
+    },
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -20,12 +46,15 @@ export default function HomePage() {
         >
           Smart Campus <span className="text-indigo-600">Operations Hub</span>
         </motion.h1>
+
         <motion.p
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.6 }}
           className="mt-5 text-lg text-gray-500 max-w-xl mx-auto"
         >
-          Manage facilities, book resources, report incidents, and stay updated with a modern campus management system.
+          Manage facilities, book resources, report incidents, and stay updated
+          with a modern campus management system.
         </motion.p>
+
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }}
           className="mt-8 flex justify-center gap-4 flex-wrap"
@@ -33,9 +62,34 @@ export default function HomePage() {
           <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition duration-200 shadow-md">
             Explore Features
           </button>
-          <button className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold px-6 py-3 rounded-xl transition duration-200">
-            Login with Google
-          </button>
+
+          {/* Module 5 – show Login or user info based on auth state */}
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-700">👋 {user.name}</span>
+              {user.role === "ADMIN" && (
+                <button
+                  className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold px-4 py-2 rounded-xl transition duration-200 text-sm"
+                  onClick={() => navigate("/admin/auth")}
+                >
+                  Admin Panel
+                </button>
+              )}
+              <button
+                className="border-2 border-gray-300 text-gray-500 hover:bg-gray-100 font-semibold px-4 py-2 rounded-xl transition duration-200 text-sm"
+                onClick={logout}
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button
+              className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold px-6 py-3 rounded-xl transition duration-200"
+              onClick={() => navigate("/login")}
+            >
+              Login with Google
+            </button>
+          )}
         </motion.div>
       </section>
 
