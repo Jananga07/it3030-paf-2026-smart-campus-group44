@@ -26,10 +26,11 @@ import NotificationsPage from './M4/NotificationsPage';
 import NotificationsPage from './M4/NotificationsPage';
 
 // Module 5 – Authentication & Authorization
-import AuthCallback   from './M5/AuthCallback';
-import LoginPage      from './M5/LoginPage';
-import AdminPage      from './M5/AdminPage';
-import ProtectedRoute from './M5/ProtectedRoute';
+import AuthCallback    from './M5/AuthCallback';
+import LoginPage       from './M5/LoginPage';
+import AdminLoginPage  from './M5/AdminLoginPage';
+import AdminPage       from './M5/AdminPage';
+import ProtectedRoute  from './M5/ProtectedRoute';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         {/* Public routes */}
         <Route path="/"              element={<Home />} />
         <Route path="/login"         element={<LoginPage />} />
+        <Route path="/admin-login"   element={<AdminLoginPage />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
 
         {/* Module 1 – Resources */}

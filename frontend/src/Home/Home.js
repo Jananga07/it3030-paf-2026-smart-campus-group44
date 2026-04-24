@@ -83,12 +83,20 @@ export default function HomePage() {
               </button>
             </div>
           ) : (
-            <button
-              className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold px-6 py-3 rounded-xl transition duration-200"
-              onClick={() => navigate("/login")}
-            >
-              Login with Google
-            </button>
+            <>
+              <button
+                className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold px-6 py-3 rounded-xl transition duration-200"
+                onClick={() => navigate("/login")}
+              >
+                User Login
+              </button>
+              <button
+                className="border-2 border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white font-semibold px-6 py-3 rounded-xl transition duration-200"
+                onClick={() => navigate("/admin-login")}
+              >
+                Admin Login
+              </button>
+            </>
           )}
         </motion.div>
       </section>

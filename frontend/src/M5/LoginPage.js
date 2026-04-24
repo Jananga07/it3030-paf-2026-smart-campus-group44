@@ -151,7 +151,12 @@ export default function LoginPage() {
 
   const handleSuccess = (loggedInUser) => {
     setUser(loggedInUser);
-    navigate("/", { replace: true }); // go to home after email login
+    // ADMIN users go to admin panel, USER users go to home
+    if (loggedInUser.role === "ADMIN") {
+      navigate("/admin/auth", { replace: true });
+    } else {
+      navigate("/", { replace: true });
+    }
   };
 
   return (
