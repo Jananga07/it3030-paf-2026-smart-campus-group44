@@ -3,9 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import ResourceFormModal from "../M1/components/ResourceFormModal";
 import { createResource } from "../M1/api/resourceApi";
+// Module 5 – auth for logout
+import { useAuth } from "../M5/useAuth";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [showAddResource, setShowAddResource] = useState(false);
   const [toast, setToast] = useState(null);
 
@@ -48,6 +51,57 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100">
+
+      {/* Admin Navbar */}
+      <nav className="bg-white shadow-md sticky top-0 z-50 border-b-2 border-indigo-100">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          {/* Logo */}
+          <span className="text-xl font-extrabold text-indigo-600 tracking-tight">
+            🏫 Smart Campus — Admin
+          </span>
+
+          {/* Admin links */}
+          <div className="hidden md:flex items-center gap-6">
+            <button
+              onClick={() => navigate("/admin-dashboard")}
+              className="text-sm font-medium text-indigo-600 border-b-2 border-indigo-600 pb-0.5"
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => navigate("/admin")}
+              className="text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors duration-200"
+            >
+              Booking Management
+            </button>
+            <button
+              onClick={() => navigate("/admin/resources")}
+              className="text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors duration-200"
+            >
+              Resources
+            </button>
+            <button
+              onClick={() => navigate("/analytics")}
+              className="text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors duration-200"
+            >
+              Analytics
+            </button>
+
+            {/* Admin info + logout */}
+            <div className="flex items-center gap-3 ml-4 pl-4 border-l border-gray-200">
+              {user && (
+                <span className="text-sm text-gray-600">👋 {user.name}</span>
+              )}
+              <button
+                onClick={async () => { await logout(); navigate("/"); }}
+                className="text-sm font-medium text-red-500 hover:text-red-700 transition-colors duration-200"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
       {/* Hero */}
       <section className="text-center py-24 px-6">
         <motion.h1
