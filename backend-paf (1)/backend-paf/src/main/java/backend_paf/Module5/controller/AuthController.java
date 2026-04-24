@@ -33,11 +33,15 @@ public class AuthController {
         this.jwtUtils       = jwtUtils;
     }
 
-    /** Register with email + password. Returns JWT immediately. */
+    /** Register with email + password. Returns JWT immediately.
+     *  Optional query param: ?role=admin  — registers as ADMIN (for admin setup only)
+     */
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequestDto dto) {
+    public ResponseEntity<?> register(
+            @RequestBody RegisterRequestDto dto,
+            @RequestParam(required = false) String role) {
         try {
-            AppUser user  = appUserService.register(dto);
+            AppUser user  = appUserService.register(dto, "admin".equalsIgnoreCase(role));
             String  token = jwtUtils.generateToken(
                     user.getId(), user.getEmail(), user.getRole().name());
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(

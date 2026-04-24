@@ -64,13 +64,22 @@ public class AppUserService {
     // ── Email/Password Register ───────────────────────────────────────────
 
     @Transactional
-    public AppUser register(RegisterRequestDto dto) {
+    public AppUser register(RegisterRequestDto dto, boolean asAdmin) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered.");
         }
         String hashed = encoder.encode(dto.getPassword());
         AppUser user  = new AppUser(dto.getName(), dto.getEmail(), hashed);
+        if (asAdmin) {
+            user.setRole(backend_paf.Module5.entity.Role.ADMIN);
+        }
         return userRepository.save(user);
+    }
+
+    /** Backward-compatible overload — registers as USER by default. */
+    @Transactional
+    public AppUser register(RegisterRequestDto dto) {
+        return register(dto, false);
     }
 
     // ── Email/Password Login ──────────────────────────────────────────────

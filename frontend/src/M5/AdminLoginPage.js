@@ -32,7 +32,7 @@ function AdminRegisterForm({ onRegistered }) {
     if (password.length < 6)  { setError("Password must be at least 6 characters."); return; }
     setLoading(true);
     try {
-      const res  = await fetch(`${API}/register`, {
+      const res  = await fetch(`${API}/register?role=admin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
@@ -40,11 +40,7 @@ function AdminRegisterForm({ onRegistered }) {
       const data = await res.json();
       if (!res.ok) { setError(data.error || "Registration failed."); return; }
 
-      setSuccess(
-        `Account created for ${email}. ` +
-        `To grant admin access, open http://localhost:8080/h2-console and run: ` +
-        `UPDATE APP_USERS SET ROLE='ADMIN' WHERE EMAIL='${email}';`
-      );
+      setSuccess(`Admin account created for ${email}. You can now Sign In.`);
       onRegistered(email);
     } catch {
       setError("Network error. Please try again.");
@@ -84,17 +80,9 @@ function AdminRegisterForm({ onRegistered }) {
         <div style={{
           background: "#f0fdf4", border: "1px solid #bbf7d0",
           color: "#15803d", borderRadius: 8, padding: "10px 12px",
-          fontSize: 12, lineHeight: 1.6, textAlign: "left",
+          fontSize: 13, textAlign: "center",
         }}>
-          ✅ <strong>Account created!</strong><br />
-          To promote to Admin, open{" "}
-          <a href="http://localhost:8080/h2-console" target="_blank" rel="noreferrer"
-            style={{ color: "#4f46e5" }}>H2 Console</a>{" "}
-          and run:<br />
-          <code style={{ background: "#dcfce7", padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>
-            UPDATE APP_USERS SET ROLE='ADMIN' WHERE EMAIL='{email}';
-          </code><br />
-          Then switch to <strong>Sign In</strong> tab to login.
+          ✅ {success}
         </div>
       )}
       <button type="submit" className="auth-submit-btn" disabled={loading}>
