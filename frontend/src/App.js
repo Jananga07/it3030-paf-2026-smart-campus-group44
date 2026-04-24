@@ -30,15 +30,14 @@ import AdminCategory from './M3/pages/AdminCategory';
 import NotificationsPage from './M4/NotificationsPage';
 
 // Module 5 – Authentication & Authorization
-import AuthCallback    from './M5/AuthCallback';
-import LoginPage       from './M5/LoginPage';
-import AdminLoginPage  from './M5/AdminLoginPage';
-import AdminPage       from './M5/AdminPage';
-import ProtectedRoute  from './M5/ProtectedRoute';
+import AuthCallback   from './M5/AuthCallback';
+import LoginPage      from './M5/LoginPage';
+import AdminPage      from './M5/AdminPage';
+import ProtectedRoute from './M5/ProtectedRoute';
 
 // Pages that should NOT show the Navbar
 const NO_NAVBAR_ROUTES = [
-  "/login", "/admin-login", "/auth/callback",
+  "/login", "/auth/callback",
   "/admin-dashboard", "/admin", "/admin/resources",
   "/analytics", "/admin/auth", "/admin/ticket-categories",
 ];
@@ -54,7 +53,6 @@ function AppRoutes() {
         {/* Public routes */}
         <Route path="/"              element={<Home />} />
         <Route path="/login"         element={<LoginPage />} />
-        <Route path="/admin-login"   element={<AdminLoginPage />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
 
         {/* Module 1 – Resources */}
@@ -73,16 +71,15 @@ function AppRoutes() {
         <Route path="/admin"           element={<AdminPanel />} />
 
         {/* Module 3 – Maintenance & Incident Ticketing */}
-        <Route path="/tickets"                element={<TicketDashboard />} />
-        <Route path="/tickets/create"         element={<CreateTicket />} />
-        <Route path="/tickets/:id"            element={<TicketDetails />} />
+        <Route path="/tickets"                 element={<TicketDashboard />} />
+        <Route path="/tickets/create"          element={<CreateTicket />} />
+        <Route path="/tickets/:id"             element={<TicketDetails />} />
         <Route path="/admin/ticket-categories" element={<AdminCategory />} />
         {/* Legacy M3 routes — redirect to new paths */}
-        <Route path="/m3"                     element={<Navigate to="/tickets" replace />} />
-        <Route path="/m3/create"              element={<Navigate to="/tickets/create" replace />} />
-        <Route path="/m3/ticket/:id"          element={<Navigate to="/tickets/:id" replace />} />
-        <Route path="/m3/admin/categories"    element={<Navigate to="/admin/ticket-categories" replace />} />
-        <Route path="/m3/*"                   element={<Navigate to="/tickets" replace />} />
+        <Route path="/m3"                   element={<Navigate to="/tickets" replace />} />
+        <Route path="/m3/create"            element={<Navigate to="/tickets/create" replace />} />
+        <Route path="/m3/admin/categories"  element={<Navigate to="/admin/ticket-categories" replace />} />
+        <Route path="/m3/*"                 element={<Navigate to="/tickets" replace />} />
 
         {/* Module 4 – Notifications */}
         <Route path="/notifications" element={<NotificationsPage />} />

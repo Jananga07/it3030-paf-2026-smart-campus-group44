@@ -1,32 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import "./Home.css";
-
-export default function HomePage() {
-  const navigate = useNavigate();
-
-  return (
-    <div>
-      {/* Navbar */}
-      <nav className="navbar">
-        <h1 className="logo">Smart Campus</h1>
-
-        {/* NEW: Module Buttons */}
-        <div className="nav-modules">
-          <button className="module-btn">M1</button>
-          <button className="module-btn">M2</button>
-          <button className="module-btn" onClick={() => navigate('/m3')}>M3</button>
-          <button className="module-btn">M4</button>
-        </div>
-
-        {/* Existing Buttons */}
-        <div className="nav-buttons">
-          <button className="btn-outline" onClick={() => navigate('/m3')}>Login</button>
-          <button className="btn-primary" onClick={() => navigate('/m3')}>Get Started</button>
-        </div>
-      </nav>
-// Module 5 – Auth state (login/logout awareness)
 import { useAuth } from "../M5/useAuth";
 
 export default function HomePage() {
@@ -38,13 +12,13 @@ export default function HomePage() {
       title: "Resource Booking",
       desc:  "Easily book lecture halls, labs, and equipment with real-time availability.",
       icon:  "📅",
-      route: null,
+      route: "/resources",
     },
     {
       title: "Incident Reporting",
       desc:  "Report issues with images and track resolution progress efficiently.",
       icon:  "🛠️",
-      route: null,
+      route: "/tickets",
     },
     {
       title: "Smart Notifications",
@@ -52,16 +26,7 @@ export default function HomePage() {
       icon:  "🔔",
       route: "/notifications",
     },
-
-export default function HomePage() {
-  const navigate = useNavigate();
-
-  const features = [
-    { title: "Resource Booking",     desc: "Easily book lecture halls, labs, and equipment with real-time availability.", icon: "📅", route: null },
-    { title: "Incident Reporting",   desc: "Report issues with images and track resolution progress efficiently.",        icon: "🛠️", route: null },
-    { title: "Smart Notifications",  desc: "Get instant updates on bookings, tickets, and system activities.",            icon: "🔔", route: "/notifications" },
   ];
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100">
@@ -85,22 +50,20 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }}
           className="mt-8 flex justify-center gap-4 flex-wrap"
         >
-          <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition duration-200 shadow-md">
+          <button
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition duration-200 shadow-md"
+            onClick={() => navigate("/resources")}
+          >
             Explore Features
           </button>
 
-        <div className="hero-buttons">
-          <button className="btn-primary" onClick={() => navigate('/m3')}>Explore Features</button>
-          <button className="btn-outline" onClick={() => navigate('/m3')}>Login with Google</button>
-        </div>
-          {/* Module 5 – show Login or user info based on auth state */}
           {user ? (
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-gray-700">👋 {user.name}</span>
               {user.role === "ADMIN" && (
                 <button
                   className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold px-4 py-2 rounded-xl transition duration-200 text-sm"
-                  onClick={() => navigate("/admin/auth")}
+                  onClick={() => navigate("/admin-dashboard")}
                 >
                   Admin Panel
                 </button>
@@ -113,12 +76,20 @@ export default function HomePage() {
               </button>
             </div>
           ) : (
-            <button
-              className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold px-6 py-3 rounded-xl transition duration-200"
-              onClick={() => navigate("/login")}
-            >
-              Login with Google
-            </button>
+            <div className="flex gap-3">
+              <button
+                className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold px-6 py-3 rounded-xl transition duration-200"
+                onClick={() => navigate("/login")}
+              >
+                User Login
+              </button>
+              <button
+                className="border-2 border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white font-semibold px-6 py-3 rounded-xl transition duration-200"
+                onClick={() => navigate("/login")}
+              >
+                Admin Login
+              </button>
+            </div>
           )}
         </motion.div>
       </section>
