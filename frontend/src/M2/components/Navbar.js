@@ -77,13 +77,13 @@ function Navbar() {
                 onClick={() => navigate('/login')}
                 className="text-sm font-medium text-indigo-600 border border-indigo-600 px-3 py-1 rounded-lg hover:bg-indigo-600 hover:text-white transition duration-200"
               >
-                User Login
+                Login
               </button>
               <button
-                onClick={() => navigate('/admin-login')}
+                onClick={() => navigate('/admin/auth')}
                 className="text-sm font-medium text-gray-600 border border-gray-400 px-3 py-1 rounded-lg hover:bg-gray-600 hover:text-white transition duration-200"
               >
-                Admin Login
+                Get Start
               </button>
             </div>
           )}

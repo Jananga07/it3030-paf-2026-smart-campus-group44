@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { getResourceById, updateResourceStatus, updateResource } from "../api/resourceApi";
 import ResourceFormModal from "../components/ResourceFormModal";
+import { useAuth } from "../../M5/useAuth";
 import "../styles/Module1.css";
 
 const TYPE_ICONS = {
@@ -21,6 +22,7 @@ const STATUS_COLORS = {
 export default function ResourceDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,6 +70,46 @@ export default function ResourceDetails() {
       showToast(e.message, "error");
     }
   };
+
+  if (!user) return (
+    <div style={{
+      minHeight: "100vh", background: "#080818",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
+    }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.88, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 280, damping: 22 }}
+        style={{
+          background: "#12102a",
+          border: "1px solid rgba(99,102,241,0.45)",
+          borderRadius: 24, padding: "50px 40px",
+          maxWidth: 400, width: "100%", textAlign: "center",
+          boxShadow: "0 30px 90px rgba(0,0,0,0.6)",
+        }}>
+        <div style={{ fontSize: 50, marginBottom: 18 }}>🔐</div>
+        <h2 style={{ color: "#fff", fontSize: 22, fontWeight: 800, marginBottom: 10, margin: "0 0 10px" }}>
+          Login Required
+        </h2>
+        <p style={{ color: "#475569", fontSize: 14, lineHeight: 1.65, marginBottom: 28 }}>
+          You need to sign in to view resource details.
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <button onClick={() => navigate("/login")} style={{
+            padding: "12px 24px", borderRadius: 12, border: "none",
+            background: "linear-gradient(135deg,#6366f1,#8b5cf6)",
+            color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer",
+          }}>Sign In Now</button>
+          <button onClick={() => navigate("/resources")} style={{
+            padding: "12px 24px", borderRadius: 12,
+            border: "1px solid rgba(255,255,255,0.14)",
+            background: "rgba(255,255,255,0.05)", color: "#c7d2fe",
+            fontSize: 14, fontWeight: 600, cursor: "pointer",
+          }}>← Back to Resources</button>
+        </div>
+      </motion.div>
+    </div>
+  );
 
   if (loading) return (
     <div className="m1-page">
