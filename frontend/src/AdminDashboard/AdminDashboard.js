@@ -56,6 +56,12 @@ export default function AdminDashboard() {
       icon:  "📊",
       action: () => navigate("/analytics"),
     },
+    {
+      title: "Ticket Categories",
+      desc:  "Manage maintenance and incident ticket categories.",
+      icon:  "🎫",
+      action: () => navigate("/admin/ticket-categories"),
+    },
   ];
 
   return (

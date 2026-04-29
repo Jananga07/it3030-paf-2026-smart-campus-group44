@@ -32,7 +32,12 @@ export default function AuthCallback() {
     fetchCurrentUser()
       .then((user) => {
         setUser(user);
-        navigate("/", { replace: true }); // ← go to home after Google login
+        // ADMIN → admin dashboard, USER → home
+        if (user && user.role === "ADMIN") {
+          navigate("/admin-dashboard", { replace: true });
+        } else {
+          navigate("/", { replace: true });
+        }
       })
       .catch(() => {
         navigate("/login?error=profile_fetch_failed", { replace: true });

@@ -7,6 +7,8 @@ import backend_paf.Module3.model.Role;
 import backend_paf.Module3.repository.CommentRepository;
 import backend_paf.Module3.repository.TicketRepository;
 import backend_paf.Module3.repository.UserRepository;
+// Module 4 – notification integration
+import backend_paf.Module4.service.NotificationEventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,10 @@ public class CommentService {
     @Autowired
     private UserRepository userRepository;
 
+    // Module 4 – triggers in-app notifications on new comments
+    @Autowired
+    private NotificationEventService notificationEventService;
+
     public Comment addComment(Long ticketId, Long userId, String text) {
         if (text == null || text.trim().isEmpty() || text.length() > 300) {
             throw new IllegalArgumentException("Comment text must be between 1 and 300 characters.");
@@ -40,7 +46,18 @@ public class CommentService {
         comment.setTicket(ticket);
         comment.setUser(user);
 
-        return commentRepository.save(comment);
+        Comment saved = commentRepository.save(comment);
+
+        // Module 4 – notify ticket owner if commenter is different
+        try {
+            Long ticketOwnerId = ticket.getUser().getId();
+            if (!ticketOwnerId.equals(userId)) {
+                notificationEventService.notifyNewTicketComment(
+                        ticketOwnerId, ticketId, user.getName());
+            }
+        } catch (Exception ignored) { /* don't fail comment if notification fails */ }
+
+        return saved;
     }
 
     public List<Comment> getCommentsByTicket(Long ticketId) {

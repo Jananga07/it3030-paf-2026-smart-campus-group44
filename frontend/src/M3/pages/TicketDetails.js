@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../api/AuthContext';
+import { useAuth } from '../../M5/useAuth';
 import { ticketApi, commentApi } from '../api/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/module3.css';
@@ -32,7 +32,7 @@ const TicketDetails = () => {
             setComments(commentsData);
         } catch (error) {
             console.error(error);
-            navigate('/m3');
+            navigate('/tickets');
         }
     };
 
@@ -99,7 +99,7 @@ const TicketDetails = () => {
 
     return (
         <div className="m3-container">
-            <button className="m3-button m3-button-secondary" onClick={() => navigate('/m3')} style={{ marginBottom: '1.5rem', width: 'auto' }}>
+            <button className="m3-button m3-button-secondary" onClick={() => navigate('/tickets')} style={{ marginBottom: '1.5rem', width: 'auto' }}>
                 &larr; Back to Dashboard
             </button>
 

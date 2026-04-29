@@ -66,6 +66,12 @@ public class SecurityConfig {
                 // Module 5 auth endpoints – public
                 .requestMatchers("/api/auth/**").permitAll()
 
+                // Module 1 – resources are publicly readable
+                .requestMatchers(HttpMethod.GET, "/api/resources/**").permitAll()
+
+                // Module 3 – categories publicly readable
+                .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+
                 // Notification endpoints – authenticated users only
                 .requestMatchers("/api/notifications/**").authenticated()
 
@@ -94,7 +100,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(allowedOrigin));
+        config.setAllowedOriginPatterns(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

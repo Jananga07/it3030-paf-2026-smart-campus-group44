@@ -126,6 +126,7 @@ public class TicketService {
 
         if (appUser.getRole() != backend_paf.Module5.entity.Role.ADMIN && appUser.getRole() != backend_paf.Module5.entity.Role.TECHNICIAN) {
         return ticketRepository.save(ticket);
+          Development-
     }
 
     public Ticket addResolutionNotes(Long ticketId, String notes, Long userId) {

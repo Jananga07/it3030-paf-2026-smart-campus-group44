@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../api/AuthContext';
+import { useAuth } from '../../M5/useAuth';
 import { ticketApi, categoryApi } from '../api/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/module3.css';
@@ -100,7 +100,7 @@ const CreateTicket = () => {
 
         try {
             await ticketApi.createTicket(data);
-            navigate('/m3');
+            navigate('/tickets');
         } catch (err) {
             setError(err.message);
         } finally {
@@ -265,7 +265,7 @@ const CreateTicket = () => {
                         <button 
                             type="button" 
                             className="m3-button m3-button-secondary" 
-                            onClick={() => navigate('/m3')}
+                            onClick={() => navigate('/tickets')}
                         >
                             Cancel
                         </button>
