@@ -10,15 +10,17 @@ function Navbar() {
   const navigate         = useNavigate();
   const { user, logout } = useAuth();
 
-  // Links visible only when logged in
-  const userLinks = [
-    { to: '/resources',      label: 'Resources' },
-    { to: '/bookings',       label: 'All Bookings' },
-    { to: '/my-bookings',    label: 'My Bookings' },
-    { to: '/book',           label: 'New Booking' },
-    { to: '/tickets',        label: '🎫 Tickets' },
-    { to: '/tickets/create', label: '+ Add Ticket' },
-  ];
+  // Links differ by role
+  const userLinks = user?.role === 'ADMIN'
+    ? [
+        { to: '/resources', label: 'Resources' },
+      ]
+    : [
+        { to: '/resources',      label: 'Resources' },
+        { to: '/my-bookings',    label: 'My Bookings' },
+        { to: '/book',           label: 'New Booking' },
+        { to: '/tickets/create', label: '+ Add Ticket' },
+      ];
 
   // Admin-only link
   const adminLink = { to: '/admin-dashboard', label: '🛠 Admin' };

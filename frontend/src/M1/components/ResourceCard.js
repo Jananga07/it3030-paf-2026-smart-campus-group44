@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "../../M5/useAuth";
 
 const TYPE_ICONS = {
   LECTURE_HALL: "🏛️",
@@ -11,6 +12,8 @@ const TYPE_ICONS = {
 
 export default function ResourceCard({ resource, onEdit, onDelete, isAdmin }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const admin = isAdmin || user?.role === "ADMIN";
 
   return (
     <motion.div
@@ -60,7 +63,8 @@ export default function ResourceCard({ resource, onEdit, onDelete, isAdmin }) {
         >
           View Details
         </button>
-        {isAdmin && (
+
+        {admin ? (
           <>
             <button className="rc-btn rc-btn-edit" onClick={() => onEdit(resource)}>
               Edit
@@ -69,6 +73,13 @@ export default function ResourceCard({ resource, onEdit, onDelete, isAdmin }) {
               Delete
             </button>
           </>
+        ) : (
+          <button
+            className="rc-btn rc-btn-edit"
+            onClick={() => navigate(`/book?resourceId=${resource.id}`)}
+          >
+            📅 Book
+          </button>
         )}
       </div>
     </motion.div>

@@ -1,29 +1,57 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { createBooking } from '../api/bookingApi';
+import { useAuth } from '../../M5/useAuth';
 
-const initialState = {
-  userId: '', resourceId: '', bookingDate: '',
-  startTime: '', endTime: '', userEmail: '', purpose: '', attendees: '',
-};
-
-function Field({ label, name, type = 'text', value, onChange }) {
+function Field({ label, name, type = 'text', value, onChange, readOnly = false }) {
   return (
     <div className="flex flex-col gap-1">
       <label className="text-sm font-medium text-gray-700">{label}</label>
       <input
         type={type} name={name} value={value} onChange={onChange} required
-        className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+        readOnly={readOnly}
+        className={`border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition ${
+          readOnly ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-semibold cursor-not-allowed' : 'border-gray-300'
+        }`}
       />
     </div>
   );
 }
 
 function BookingForm() {
-  const [form, setForm] = useState(initialState);
+  const { user } = useAuth();
+  const navigate  = useNavigate();
+  const location  = useLocation();
+
+  // Read ?resourceId= from URL (set by the Book button on ResourceCard)
+  const params     = new URLSearchParams(location.search);
+  const urlResId   = params.get('resourceId') || '';
+
+  const [form, setForm] = useState({
+    userId: '', resourceId: urlResId,
+    bookingDate: '', startTime: '', endTime: '',
+    userEmail: '', purpose: '', attendees: '',
+  });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [error, setError]     = useState('');
+
+  // Auto-fill userId and email from logged-in user
+  useEffect(() => {
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        userId:    user.id    ?? '',
+        userEmail: user.email ?? '',
+      }));
+    }
+  }, [user]);
+
+  // If resourceId changes in URL after mount, sync it
+  useEffect(() => {
+    if (urlResId) {
+      setForm((prev) => ({ ...prev, resourceId: urlResId }));
+    }
+  }, [urlResId]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -40,9 +68,9 @@ function BookingForm() {
     try {
       await createBooking({
         ...form,
-        userId: Number(form.userId),
+        userId:     Number(form.userId),
         resourceId: Number(form.resourceId),
-        attendees: Number(form.attendees),
+        attendees:  Number(form.attendees),
       });
       navigate('/my-bookings');
     } catch (err) {
@@ -78,14 +106,14 @@ function BookingForm() {
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-md p-8 space-y-5 border border-indigo-50">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <Field label="User ID" name="userId" type="number" value={form.userId} onChange={handleChange} />
-            <Field label="Resource ID" name="resourceId" type="number" value={form.resourceId} onChange={handleChange} />
+            <Field label="User ID"     name="userId"     type="number" value={form.userId}     onChange={handleChange} readOnly />
+            <Field label="Resource ID" name="resourceId" type="number" value={form.resourceId} onChange={handleChange} readOnly={Boolean(urlResId)} />
           </div>
-          <Field label="Email" name="userEmail" type="email" value={form.userEmail} onChange={handleChange} />
+          <Field label="Email" name="userEmail" type="email" value={form.userEmail} onChange={handleChange} readOnly />
           <Field label="Booking Date" name="bookingDate" type="date" value={form.bookingDate} onChange={handleChange} />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <Field label="Start Time" name="startTime" type="time" value={form.startTime} onChange={handleChange} />
-            <Field label="End Time" name="endTime" type="time" value={form.endTime} onChange={handleChange} />
+            <Field label="End Time"   name="endTime"   type="time" value={form.endTime}   onChange={handleChange} />
           </div>
           <Field label="Purpose" name="purpose" value={form.purpose} onChange={handleChange} />
           <Field label="Number of Attendees" name="attendees" type="number" value={form.attendees} onChange={handleChange} />

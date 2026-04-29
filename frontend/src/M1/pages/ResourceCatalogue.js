@@ -4,9 +4,12 @@ import ResourceCard from "../components/ResourceCard";
 import ResourceFilter from "../components/ResourceFilter";
 import ResourceFormModal from "../components/ResourceFormModal";
 import { getAllResources, searchResources, updateResource, deleteResource } from "../api/resourceApi";
+import { useAuth } from "../../M5/useAuth";
 import "../styles/Module1.css";
 
 export default function ResourceCatalogue() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -115,7 +118,7 @@ export default function ResourceCatalogue() {
             <ResourceCard
               key={r.id}
               resource={r}
-              isAdmin={true}
+              isAdmin={isAdmin}
               onEdit={openEdit}
               onDelete={(id) => setDeleteConfirm(id)}
             />
