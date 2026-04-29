@@ -74,6 +74,10 @@ public class TicketService {
                 .orElseThrow(() -> new RuntimeException("User not found in Auth module"));
 
         if (appUser.getRole() == backend_paf.Module5.entity.Role.ADMIN || appUser.getRole() == backend_paf.Module5.entity.Role.TECHNICIAN) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() == Role.ADMIN || user.getRole() == Role.TECHNICIAN) {
             return ticketRepository.findAll();
         } else {
             return ticketRepository.findByUserId(userId);
@@ -92,6 +96,11 @@ public class TicketService {
                 .orElseThrow(() -> new RuntimeException("User not found in Auth module"));
 
         if (appUser.getRole() != backend_paf.Module5.entity.Role.ADMIN && appUser.getRole() != backend_paf.Module5.entity.Role.TECHNICIAN) {
+    public Ticket updateTicketStatus(Long ticketId, TicketStatus newStatus, String note, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() != Role.ADMIN && user.getRole() != Role.TECHNICIAN) {
             throw new RuntimeException("Unauthorized action. Only Admin or Technician can update status.");
         }
 
@@ -116,6 +125,14 @@ public class TicketService {
                 .orElseThrow(() -> new RuntimeException("User not found in Auth module"));
 
         if (appUser.getRole() != backend_paf.Module5.entity.Role.ADMIN && appUser.getRole() != backend_paf.Module5.entity.Role.TECHNICIAN) {
+        return ticketRepository.save(ticket);
+    }
+
+    public Ticket addResolutionNotes(Long ticketId, String notes, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() != Role.ADMIN && user.getRole() != Role.TECHNICIAN) {
             throw new RuntimeException("Unauthorized action. Only Admin or Technician can add resolution notes.");
         }
 

@@ -1,0 +1,268 @@
+/* ─── AdminNotificationsPanel.css ────────────────────────────────────────────
+   Admin notification management panel – indigo theme (#4f46e5).
+   ────────────────────────────────────────────────────────────────────────── */
+
+.anp-wrapper {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(79, 70, 229, 0.08);
+  padding: 24px;
+  margin-top: 24px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────────── */
+.anp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.anp-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0;
+}
+
+.anp-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.anp-success {
+  font-size: 13px;
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.anp-btn-send {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #4f46e5;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.anp-btn-send:hover { background: #4338ca; }
+
+.anp-btn-refresh {
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid #4f46e5;
+  background: transparent;
+  color: #4f46e5;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.anp-btn-refresh:hover { background: #eef2ff; }
+
+/* ─── Send form ──────────────────────────────────────────────────────────── */
+.anp-form {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.anp-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.anp-form-row label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.anp-form-row input,
+.anp-form-row select,
+.anp-form-row textarea {
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1f2937;
+  background: white;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.anp-form-row input:focus,
+.anp-form-row select:focus,
+.anp-form-row textarea:focus {
+  outline: none;
+  border-color: #4f46e5;
+}
+
+.anp-form-row-half {
+  flex-direction: row;
+  gap: 12px;
+}
+
+.anp-form-row-half > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.anp-btn-submit {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #4f46e5;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.anp-btn-submit:hover:not(:disabled) { background: #4338ca; }
+.anp-btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ─── Stats ──────────────────────────────────────────────────────────────── */
+.anp-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.anp-stat {
+  font-size: 13px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.anp-stat b { color: #1f2937; }
+
+/* ─── List ───────────────────────────────────────────────────────────────── */
+.anp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.anp-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  transition: box-shadow 0.15s;
+}
+
+.anp-item:hover { box-shadow: 0 2px 8px rgba(79, 70, 229, 0.1); }
+.anp-item.unread { background: #f5f3ff; border-color: #c4b5fd; }
+.anp-item.read   { background: #fafafa; opacity: 0.85; }
+
+.anp-item-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+
+.anp-item-body { flex: 1; min-width: 0; }
+
+.anp-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+
+.anp-item-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.anp-item-uid {
+  font-size: 11px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.anp-item-msg {
+  font-size: 12px;
+  color: #4b5563;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.anp-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.anp-item-time { font-size: 11px; color: #9ca3af; }
+
+.anp-item-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+.anp-item-badge.unread { background: #eef2ff; color: #4f46e5; }
+.anp-item-badge.read   { background: #f0fdf4; color: #16a34a; }
+
+.anp-item-type {
+  font-size: 10px;
+  color: #9ca3af;
+  background: #f3f4f6;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+.anp-item-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.anp-item-delete:hover { background: #fee2e2; }
+
+/* ─── States ─────────────────────────────────────────────────────────────── */
+.anp-loading, .anp-empty, .anp-error {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.anp-error { color: #ef4444; }
