@@ -119,7 +119,7 @@ const AdminCategory = () => {
                 <div style={{ marginTop: '3rem' }}>
                     <button 
                         className="m3-button m3-button-secondary" 
-                        onClick={() => navigate('/m3')}
+                        onClick={() => navigate('/tickets')}
                         style={{ width: 'auto' }}
                     >
                         Back to Dashboard
