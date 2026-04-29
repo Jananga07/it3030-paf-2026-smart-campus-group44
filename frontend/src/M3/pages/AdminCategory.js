@@ -10,6 +10,7 @@ const AdminCategory = () => {
     const [newCategory, setNewCategory] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     useEffect(() => {
         fetchCategories();
@@ -26,16 +27,20 @@ const AdminCategory = () => {
 
     const handleAddCategory = async (e) => {
         e.preventDefault();
-        if (!newCategory.trim()) return;
+        const trimmed = newCategory.trim();
+        if (!trimmed) return;
 
         setIsLoading(true);
         setError('');
+        setSuccess('');
         try {
-            await categoryApi.addCategory(newCategory);
+            await categoryApi.addCategory(trimmed);
             setNewCategory('');
+            setSuccess(`Category "${trimmed}" added successfully!`);
+            setTimeout(() => setSuccess(''), 3000);
             fetchCategories();
         } catch (err) {
-            setError(err.message);
+            setError(err.message || 'Failed to add category');
         } finally {
             setIsLoading(false);
         }
@@ -86,6 +91,7 @@ const AdminCategory = () => {
                 </form>
 
                 {error && <p style={{ color: 'var(--secondary)', marginBottom: '1.5rem' }}>{error}</p>}
+                {success && <p style={{ color: '#34d399', marginBottom: '1.5rem', fontWeight: 600 }}>{success}</p>}
 
                 <div className="category-list">
                     <h3 className="form-label">Existing Categories</h3>

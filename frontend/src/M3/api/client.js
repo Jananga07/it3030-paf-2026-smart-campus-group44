@@ -50,7 +50,10 @@ export const categoryApi = {
         const response = await fetch(`${BASE_URL}/categories?name=${encodeURIComponent(name)}`, {
             method: 'POST',
         });
-        if (!response.ok) throw new Error('Failed to add category');
+        if (!response.ok) {
+            const msg = await response.text();
+            throw new Error(msg || 'Failed to add category');
+        }
         return response.json();
     },
 
