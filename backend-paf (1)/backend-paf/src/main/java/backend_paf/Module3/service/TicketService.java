@@ -70,6 +70,10 @@ public class TicketService {
     }
 
     public List<Ticket> getAllTickets(Long userId) {
+        backend_paf.Module5.entity.AppUser appUser = appUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found in Auth module"));
+
+        if (appUser.getRole() == backend_paf.Module5.entity.Role.ADMIN || appUser.getRole() == backend_paf.Module5.entity.Role.TECHNICIAN) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -84,6 +88,14 @@ public class TicketService {
         return ticketRepository.findById(id);
     }
 
+    @Autowired
+    private backend_paf.Module5.repository.AppUserRepository appUserRepository;
+
+    public Ticket updateTicketStatus(Long ticketId, TicketStatus newStatus, String note, Long userId) {
+        backend_paf.Module5.entity.AppUser appUser = appUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found in Auth module"));
+
+        if (appUser.getRole() != backend_paf.Module5.entity.Role.ADMIN && appUser.getRole() != backend_paf.Module5.entity.Role.TECHNICIAN) {
     public Ticket updateTicketStatus(Long ticketId, TicketStatus newStatus, String note, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -106,6 +118,15 @@ public class TicketService {
         } catch (Exception ignored) { /* don't fail ticket update if notification fails */ }
 
         return saved;
+    }
+
+    public Ticket addResolutionNotes(Long ticketId, String notes, Long userId) {
+        backend_paf.Module5.entity.AppUser appUser = appUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found in Auth module"));
+
+        if (appUser.getRole() != backend_paf.Module5.entity.Role.ADMIN && appUser.getRole() != backend_paf.Module5.entity.Role.TECHNICIAN) {
+        return ticketRepository.save(ticket);
+          Development-
     }
 
     public Ticket addResolutionNotes(Long ticketId, String notes, Long userId) {

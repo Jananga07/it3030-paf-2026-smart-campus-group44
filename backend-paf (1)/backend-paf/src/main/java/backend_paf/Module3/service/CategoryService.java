@@ -19,7 +19,7 @@ public class CategoryService {
 
     public Category addCategory(String name) {
         if (categoryRepository.findByName(name).isPresent()) {
-            throw new RuntimeException("Category already exists");
+            throw new IllegalArgumentException("Category already exists");
         }
         return categoryRepository.save(new Category(name));
     }
