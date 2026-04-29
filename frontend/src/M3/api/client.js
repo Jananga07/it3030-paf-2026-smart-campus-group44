@@ -58,6 +58,18 @@ export const categoryApi = {
     return res.json();
   },
 
+
+    addCategory: async (name) => {
+        const response = await fetch(`${BASE_URL}/categories?name=${encodeURIComponent(name)}`, {
+            method: 'POST',
+        });
+        if (!response.ok) {
+            const msg = await response.text();
+            throw new Error(msg || 'Failed to add category');
+        }
+        return response.json();
+    },
+
   addCategory: async (name) => {
     const res = await fetch(`${BASE_URL}/categories?name=${encodeURIComponent(name)}`, {
       method: 'POST',
@@ -66,6 +78,7 @@ export const categoryApi = {
     if (!res.ok) throw new Error('Failed to add category');
     return res.json();
   },
+
 
   deleteCategory: async (id) => {
     const res = await fetch(`${BASE_URL}/categories/${id}`, {
