@@ -30,6 +30,7 @@ import TicketDashboard from './M3/pages/TicketDashboard';
 import CreateTicket from './M3/pages/CreateTicket';
 import TicketDetails from './M3/pages/TicketDetails';
 import AdminCategory from './M3/pages/AdminCategory';
+import AdminTechnician from './M3/pages/AdminTechnician';
 
 // Module 4 – Notifications
 import NotificationsPage from './M4/NotificationsPage';
@@ -44,7 +45,7 @@ import ProtectedRoute from './M5/ProtectedRoute';
 const NO_NAVBAR_ROUTES = [
   "/login", "/auth/callback",
   "/admin-dashboard", "/admin", "/admin/resources",
-  "/analytics", "/admin/auth", "/admin/ticket-categories",
+  "/analytics", "/admin/auth", "/admin/ticket-categories", "/admin/technicians",
 ];
 
 function AppRoutes() {
@@ -80,6 +81,7 @@ function AppRoutes() {
         <Route path="/tickets/create"          element={<CreateTicket />} />
         <Route path="/tickets/:id"             element={<TicketDetails />} />
         <Route path="/admin/ticket-categories" element={<AdminCategory />} />
+        <Route path="/admin/technicians"       element={<AdminTechnician />} />
         <Route path="/m3/*"                    element={<Navigate to="/tickets" replace />} />
 
         {/* Module 4 – Notifications */}

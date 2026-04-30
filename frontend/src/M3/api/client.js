@@ -2,7 +2,6 @@ import { getAuthHeader } from '../../M5/authService';
 
 const BASE_URL = 'http://localhost:8080/api';
 
-const authJson = () => ({ 'Content-Type': 'application/json', ...getAuthHeader() });
 const authOnly = () => ({ ...getAuthHeader() });
 
 export const ticketApi = {
@@ -49,6 +48,53 @@ export const ticketApi = {
     if (!res.ok) throw new Error('Failed to add resolution notes');
     return res.json();
   },
+  
+  assignTechnician: async (id, technicianId, adminId) => {
+    const res = await fetch(
+      `${BASE_URL}/tickets/${id}/assign?technicianId=${technicianId}&adminId=${adminId}`,
+      { method: 'POST', headers: { ...authOnly() } }
+    );
+    if (!res.ok) throw new Error('Failed to assign technician');
+    return res.json();
+  },
+
+  deleteTicket: async (id, adminId) => {
+    const res = await fetch(`${BASE_URL}/tickets/${id}?adminId=${adminId}`, {
+      method: 'DELETE',
+      headers: { ...authOnly() },
+    });
+    if (!res.ok) throw new Error('Failed to delete ticket');
+    return true;
+  },
+
+  getTechnicians: async () => {
+    const res = await fetch(`${BASE_URL}/tickets/technicians`, {
+      headers: { ...authOnly() },
+    });
+    if (!res.ok) throw new Error('Failed to fetch technicians');
+    return res.json();
+  },
+
+  addTechnician: async (name, email, password) => {
+    const res = await fetch(`${BASE_URL}/admin/technician?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
+      method: 'POST',
+      headers: { ...authOnly() },
+    });
+    if (!res.ok) {
+        const msg = await res.text();
+        throw new Error(msg || 'Failed to add technician');
+    }
+    return res.json();
+  },
+
+  deleteTechnician: async (id) => {
+    const res = await fetch(`${BASE_URL}/admin/users/${id}`, {
+      method: 'DELETE',
+      headers: { ...authOnly() },
+    });
+    if (!res.ok) throw new Error('Failed to delete technician');
+    return true;
+  },
 };
 
 export const categoryApi = {
@@ -57,18 +103,6 @@ export const categoryApi = {
     if (!res.ok) throw new Error('Failed to fetch categories');
     return res.json();
   },
-
-
-    addCategory: async (name) => {
-        const response = await fetch(`${BASE_URL}/categories?name=${encodeURIComponent(name)}`, {
-            method: 'POST',
-        });
-        if (!response.ok) {
-            const msg = await response.text();
-            throw new Error(msg || 'Failed to add category');
-        }
-        return response.json();
-    },
 
   addCategory: async (name) => {
     const res = await fetch(`${BASE_URL}/categories?name=${encodeURIComponent(name)}`, {

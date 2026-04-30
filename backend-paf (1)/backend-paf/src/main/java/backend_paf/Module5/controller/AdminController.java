@@ -4,6 +4,7 @@ import backend_paf.Module5.dto.UserProfileDto;
 import backend_paf.Module5.entity.AppUser;
 import backend_paf.Module5.entity.Role;
 import backend_paf.Module5.repository.AppUserRepository;
+import backend_paf.Module5.service.AppUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +28,11 @@ import java.util.Map;
 public class AdminController {
 
     private final AppUserRepository userRepository;
+    private final AppUserService appUserService;
 
-    public AdminController(AppUserRepository userRepository) {
+    public AdminController(AppUserRepository userRepository, AppUserService appUserService) {
         this.userRepository = userRepository;
+        this.appUserService = appUserService;
     }
 
     /** List every registered user. */
@@ -62,5 +65,25 @@ public class AdminController {
         return ResponseEntity.ok(new UserProfileDto(
                 user.getId(), user.getName(), user.getEmail(),
                 user.getPictureUrl(), user.getRole().name()));
+    }
+
+    /** Register a new technician directly. */
+    @PostMapping("/technician")
+    public ResponseEntity<UserProfileDto> registerTechnician(
+            @RequestParam String name,
+            @RequestParam String email,
+            @RequestParam String password) {
+        
+        AppUser user = appUserService.registerTechnician(name, email, password);
+        return ResponseEntity.ok(new UserProfileDto(
+                user.getId(), user.getName(), user.getEmail(),
+                user.getPictureUrl(), user.getRole().name()));
+    }
+
+    /** Delete a user. */
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

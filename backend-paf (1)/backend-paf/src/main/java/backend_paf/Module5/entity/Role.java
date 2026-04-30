@@ -7,5 +7,7 @@ package backend_paf.Module5.entity;
  */
 public enum Role {
     USER,
-    ADMIN
+    ADMIN,
+    TECHNICIAN,
+    STAFF
 }

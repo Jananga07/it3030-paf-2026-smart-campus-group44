@@ -23,12 +23,7 @@ const TicketDashboard = () => {
     const [error, setError]     = useState('');
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (user?.id) fetchTickets();
-        else setLoading(false);
-    }, [user]);
-
-    const fetchTickets = async () => {
+    const fetchTickets = React.useCallback(async () => {
         setLoading(true);
         setError('');
         try {
@@ -41,7 +36,12 @@ const TicketDashboard = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user?.id]);
+
+    useEffect(() => {
+        if (user?.id) fetchTickets();
+        else setLoading(false);
+    }, [user, fetchTickets]);
 
     if (!user) return (
         <div className="m3-container">
@@ -66,12 +66,20 @@ const TicketDashboard = () => {
                 </div>
                 <div style={{ display: 'flex', gap: '1rem' }}>
                     {user.role === 'ADMIN' && (
-                        <button className="m3-button m3-button-secondary"
-                            onClick={() => navigate('/admin/ticket-categories')}>
-                            Manage Categories
-                        </button>
+                        <>
+                            <button className="m3-button m3-button-secondary"
+                                onClick={() => navigate('/admin/ticket-categories')}
+                                style={{ width: 'auto' }}>
+                                Manage Categories
+                            </button>
+                            <button className="m3-button m3-button-secondary"
+                                onClick={() => navigate('/admin/technicians')}
+                                style={{ width: 'auto' }}>
+                                Manage Technicians
+                            </button>
+                        </>
                     )}
-                    <button className="m3-button" onClick={() => navigate('/tickets/create')}>
+                    <button className="m3-button" onClick={() => navigate('/tickets/create')} style={{ width: 'auto' }}>
                         + New Ticket
                     </button>
                 </div>

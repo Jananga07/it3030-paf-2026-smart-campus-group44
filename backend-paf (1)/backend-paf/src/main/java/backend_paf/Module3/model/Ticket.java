@@ -51,6 +51,12 @@ public class Ticket {
     @Column(length = 1000)
     private String statusNote;
 
+    @Column(name = "assigned_technician_id")
+    private Long assignedTechnicianId;
+
+    @Column(name = "assigned_technician_name")
+    private String assignedTechnicianName;
+
     private LocalDateTime createdAt;
     
     private LocalDateTime updatedAt;
@@ -177,5 +183,21 @@ public class Ticket {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public Long getAssignedTechnicianId() {
+        return assignedTechnicianId;
+    }
+
+    public void setAssignedTechnicianId(Long assignedTechnicianId) {
+        this.assignedTechnicianId = assignedTechnicianId;
+    }
+
+    public String getAssignedTechnicianName() {
+        return assignedTechnicianName;
+    }
+
+    public void setAssignedTechnicianName(String assignedTechnicianName) {
+        this.assignedTechnicianName = assignedTechnicianName;
     }
 }
