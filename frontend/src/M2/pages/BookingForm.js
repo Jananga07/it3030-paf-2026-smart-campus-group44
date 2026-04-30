@@ -1,31 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { createBooking } from '../api/bookingApi';
+import { createBooking, getAllBookings } from '../api/bookingApi';
+import { getResourceById } from '../../M1/api/resourceApi';
 import { useAuth } from '../../M5/useAuth';
+import './BookingForm.css';
 
-function Field({ label, name, type = 'text', value, onChange, readOnly = false }) {
+// Hourly time slots 7:00 AM – 9:00 PM
+const TIME_SLOTS = Array.from({ length: 15 }, (_, i) => {
+  const hour = i + 7;
+  const label = hour < 12 ? `${hour}:00 AM` : hour === 12 ? `12:00 PM` : `${hour - 12}:00 PM`;
+  const value = `${String(hour).padStart(2, '0')}:00`;
+  return { label, value };
+});
+
+function TimeSelect({ label, name, value, onChange, bookedHours = [] }) {
   return (
-    <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
+    <div className="bf-field">
+      <label className="bf-label">{label}</label>
+      <select name={name} value={value} onChange={onChange} required className="bf-input">
+        <option value="">Select time</option>
+        {TIME_SLOTS.map((t) => {
+          const isBooked = bookedHours.includes(t.value);
+          return (
+            <option key={t.value} value={t.value} disabled={isBooked}>
+              {t.label}{isBooked ? ' — Booked' : ''}
+            </option>
+          );
+        })}
+      </select>
+    </div>
+  );
+}
+
+function Field({ label, name, type = 'text', value, onChange, readOnly = false, autoFilled = false, min }) {
+  return (
+    <div className="bf-field">
+      <label className="bf-label">
+        {label}
+        {autoFilled && <span className="bf-auto-badge">✓ Auto-filled</span>}
+      </label>
       <input
-        type={type} name={name} value={value} onChange={onChange} required
-        readOnly={readOnly}
-        className={`border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition ${
-          readOnly ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-semibold cursor-not-allowed' : 'border-gray-300'
-        }`}
+        type={type} name={name} value={value} onChange={onChange}
+        required readOnly={readOnly} min={min}
+        className={`bf-input${readOnly ? ' bf-input-readonly' : ''}`}
       />
     </div>
   );
 }
 
 function BookingForm() {
-  const { user } = useAuth();
+  const { user }  = useAuth();
   const navigate  = useNavigate();
   const location  = useLocation();
-
-  // Read ?resourceId= from URL (set by the Book button on ResourceCard)
-  const params     = new URLSearchParams(location.search);
-  const urlResId   = params.get('resourceId') || '';
+  const urlResId  = new URLSearchParams(location.search).get('resourceId') || '';
 
   const [form, setForm] = useState({
     userId: '', resourceId: urlResId,
@@ -34,94 +61,162 @@ function BookingForm() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
+  const [resourceName, setResourceName] = useState('');
+  const [resourceCapacity, setResourceCapacity] = useState(null);
+  const [bookedHours, setBookedHours]   = useState([]);
 
-  // Auto-fill userId and email from logged-in user
+  // Fetch resource name when resourceId is known
   useEffect(() => {
-    if (user) {
-      setForm((prev) => ({
-        ...prev,
-        userId:    user.id    ?? '',
-        userEmail: user.email ?? '',
-      }));
-    }
+    const id = urlResId || form.resourceId;
+    if (!id) return;
+    getResourceById(id)
+      .then(r => { setResourceName(r.name); setResourceCapacity(r.capacity); })
+      .catch(() => { setResourceName(''); setResourceCapacity(null); });
+  }, [urlResId, form.resourceId]);
+
+  // Fetch booked hours when resource + date are both set
+  useEffect(() => {
+    const { resourceId, bookingDate } = form;
+    if (!resourceId || !bookingDate) { setBookedHours([]); return; }
+    getAllBookings()
+      .then(all => {
+        const taken = all
+          .filter(b =>
+            String(b.resourceId) === String(resourceId) &&
+            b.bookingDate === bookingDate &&
+            (b.status === 'APPROVED' || b.status === 'PENDING')
+          )
+          .flatMap(b => {
+            // collect every hour from startTime to endTime (exclusive)
+            const start = parseInt(b.startTime?.slice(0, 2), 10);
+            const end   = parseInt(b.endTime?.slice(0, 2), 10);
+            const hours = [];
+            for (let h = start; h < end; h++) hours.push(`${String(h).padStart(2,'0')}:00`);
+            return hours;
+          });
+        setBookedHours([...new Set(taken)]);
+      })
+      .catch(() => setBookedHours([]));
+  }, [form.resourceId, form.bookingDate]);
+
+  useEffect(() => {
+    if (user) setForm((p) => ({ ...p, userId: user.id ?? '', userEmail: user.email ?? '' }));
   }, [user]);
 
-  // If resourceId changes in URL after mount, sync it
   useEffect(() => {
-    if (urlResId) {
-      setForm((prev) => ({ ...prev, resourceId: urlResId }));
-    }
+    if (urlResId) setForm((p) => ({ ...p, resourceId: urlResId }));
   }, [urlResId]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
-  const parseError = (msg) => {
-    try { return JSON.parse(msg).error || msg; } catch { return msg; }
-  };
-
-  const isConflict = (msg) => msg?.toLowerCase().includes('conflict');
+  const parseError   = (msg) => { try { return JSON.parse(msg).error || msg; } catch { return msg; } };
+  const isConflict   = (msg) => msg?.toLowerCase().includes('conflict');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
+    setLoading(true); setError('');
+    if (resourceCapacity && Number(form.attendees) > resourceCapacity) {
+      setError(`Attendees (${form.attendees}) exceeds this resource's capacity of ${resourceCapacity} people.`);
+      setLoading(false);
+      return;
+    }
     try {
       await createBooking({
         ...form,
-        userId:     Number(form.userId),
-        resourceId: Number(form.resourceId),
-        attendees:  Number(form.attendees),
+        userId: Number(form.userId), resourceId: Number(form.resourceId), attendees: Number(form.attendees),
       });
       navigate('/my-bookings');
     } catch (err) {
       setError(parseError(err.message) || 'Failed to create booking');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-extrabold text-indigo-600 mb-1">New Booking</h1>
-        <p className="text-gray-500 mb-8 text-sm">Fill in the details to request a campus resource.</p>
+    <div className="bf-page">
+      <div className="bf-container">
+
+        <button className="bf-back" onClick={() => navigate(-1)}>← Back</button>
+
+        <div className="bf-header">
+          <h1>📅 New Booking</h1>
+          <p>Fill in the details below to request a campus resource.</p>
+        </div>
 
         {error && (
-          <div className={`rounded-xl px-5 py-4 mb-6 flex gap-3 items-start border ${
-            isConflict(error) ? 'bg-orange-50 border-orange-200' : 'bg-red-50 border-red-200'
-          }`}>
-            <span className="text-xl">{isConflict(error) ? '⚠️' : '❌'}</span>
+          <div className={`bf-alert ${isConflict(error) ? 'bf-alert-warning' : 'bf-alert-danger'}`}
+            style={{ marginBottom: 16 }}>
+            <span className="bf-alert-icon">{isConflict(error) ? '⚠️' : '❌'}</span>
             <div>
-              <p className={`font-semibold text-sm ${isConflict(error) ? 'text-orange-700' : 'text-red-700'}`}>
+              <div className="bf-alert-title">
                 {isConflict(error) ? 'Time Slot Already Booked' : 'Booking Failed'}
-              </p>
-              <p className={`text-sm mt-1 ${isConflict(error) ? 'text-orange-600' : 'text-red-600'}`}>
+              </div>
+              <div className="bf-alert-msg">
                 {isConflict(error)
                   ? `Resource ${form.resourceId} is already booked on ${form.bookingDate} from ${form.startTime} to ${form.endTime}.`
                   : error}
-              </p>
+              </div>
             </div>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-md p-8 space-y-5 border border-indigo-50">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <Field label="User ID"     name="userId"     type="number" value={form.userId}     onChange={handleChange} readOnly />
-            <Field label="Resource ID" name="resourceId" type="number" value={form.resourceId} onChange={handleChange} readOnly={Boolean(urlResId)} />
-          </div>
-          <Field label="Email" name="userEmail" type="email" value={form.userEmail} onChange={handleChange} readOnly />
-          <Field label="Booking Date" name="bookingDate" type="date" value={form.bookingDate} onChange={handleChange} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <Field label="Start Time" name="startTime" type="time" value={form.startTime} onChange={handleChange} />
-            <Field label="End Time"   name="endTime"   type="time" value={form.endTime}   onChange={handleChange} />
-          </div>
-          <Field label="Purpose" name="purpose" value={form.purpose} onChange={handleChange} />
-          <Field label="Number of Attendees" name="attendees" type="number" value={form.attendees} onChange={handleChange} />
+        <form onSubmit={handleSubmit}>
+          <div className="bf-card">
 
-          <button type="submit" disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition duration-200 disabled:opacity-50 shadow-md">
-            {loading ? 'Submitting...' : 'Submit Booking Request'}
-          </button>
+            <div className="bf-section">
+              <div className="bf-section-title">👤 Your Details</div>
+              <div className="bf-row">
+                <Field label="User ID" name="userId" type="number" value={form.userId} onChange={handleChange} readOnly autoFilled />
+                <Field label="Email" name="userEmail" type="email" value={form.userEmail} onChange={handleChange} readOnly autoFilled />
+              </div>
+            </div>
+
+            <div className="bf-section">
+              <div className="bf-section-title">🏢 Resource</div>
+              <Field label="Resource ID" name="resourceId" type="number" value={form.resourceId}
+                onChange={handleChange} readOnly={Boolean(urlResId)} autoFilled={Boolean(urlResId)} />
+              {resourceName && (
+                <div className="bf-resource-name">
+                  🏫 <strong>{resourceName}</strong>
+                </div>
+              )}
+            </div>
+
+            <div className="bf-section">
+              <div className="bf-section-title">📅 Date &amp; Time</div>
+              <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+                <Field label="Booking Date" name="bookingDate" type="date" value={form.bookingDate} onChange={handleChange} min={new Date().toISOString().split('T')[0]} />
+                <div className="bf-row">
+                  <TimeSelect label="Start Time" name="startTime" value={form.startTime} onChange={handleChange} bookedHours={bookedHours} />
+                  <TimeSelect label="End Time"   name="endTime"   value={form.endTime}   onChange={handleChange} bookedHours={bookedHours} />
+                </div>
+              </div>
+            </div>
+
+            <div className="bf-section">
+              <div className="bf-section-title">📝 Booking Details</div>
+              <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+                <Field label="Purpose"             name="purpose"   value={form.purpose}   onChange={handleChange} />
+                <Field label="Number of Attendees" name="attendees" type="number" value={form.attendees} onChange={handleChange} />
+                {resourceCapacity && form.attendees && Number(form.attendees) > resourceCapacity && (
+                  <div className="bf-capacity-warn">
+                    ⚠ Exceeds capacity — max {resourceCapacity} people allowed
+                  </div>
+                )}
+                {resourceCapacity && (
+                  <div className="bf-capacity-hint">
+                    Max capacity: {resourceCapacity} people
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="bf-submit-section">
+              <span className="bf-submit-hint">Your booking will be reviewed by an admin.</span>
+              <button type="submit" disabled={loading} className="bf-submit-btn">
+                {loading ? '⏳ Submitting…' : '📤 Submit Booking Request'}
+              </button>
+            </div>
+
+          </div>
         </form>
       </div>
     </div>

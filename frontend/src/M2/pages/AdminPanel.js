@@ -1,27 +1,44 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { getAllBookings, approveBooking, rejectBooking, cancelBooking, deleteBooking } from '../api/bookingApi';
 import StatusBadge from '../components/StatusBadge';
+import AdminSidebar from '../../AdminDashboard/AdminSidebar';
+import './AdminPanel.css';
 
 const TABS = ['ALL', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'];
 
+const TAB_META = {
+  ALL:       { icon: '📋', cls: 'ap-sum-icon-all' },
+  PENDING:   { icon: '⏳', cls: 'ap-sum-icon-pending' },
+  APPROVED:  { icon: '✅', cls: 'ap-sum-icon-approved' },
+  REJECTED:  { icon: '❌', cls: 'ap-sum-icon-rejected' },
+  CANCELLED: { icon: '🚫', cls: 'ap-sum-icon-cancelled' },
+};
+
 function AdminPanel() {
-  const [bookings, setBookings] = useState([]);
-  const [tab, setTab] = useState('ALL');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [rejectModal, setRejectModal] = useState(null);
+  const [allBookings, setAllBookings]   = useState([]);
+  const [tab, setTab]                   = useState('ALL');
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState('');
+  const [rejectModal, setRejectModal]   = useState(null);
   const [rejectReason, setRejectReason] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
 
   const fetchBookings = useCallback(() => {
     setLoading(true);
-    getAllBookings(tab === 'ALL' ? null : tab)
-      .then(setBookings)
+    getAllBookings(null)
+      .then(setAllBookings)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [tab]);
+  }, []);
 
   useEffect(() => { fetchBookings(); }, [fetchBookings]);
+
+  const counts = TABS.reduce((acc, t) => {
+    acc[t] = t === 'ALL' ? allBookings.length : allBookings.filter(b => b.status === t).length;
+    return acc;
+  }, {});
+
+  const displayed = tab === 'ALL' ? allBookings : allBookings.filter(b => b.status === tab);
 
   const handleApprove = async (id) => {
     setActionLoading(true);
@@ -33,7 +50,11 @@ function AdminPanel() {
   const handleReject = async () => {
     if (!rejectReason.trim()) return alert('Please enter a rejection reason.');
     setActionLoading(true);
-    try { await rejectBooking(rejectModal, rejectReason); setRejectModal(null); setRejectReason(''); fetchBookings(); }
+    try {
+      await rejectBooking(rejectModal, rejectReason);
+      setRejectModal(null); setRejectReason('');
+      fetchBookings();
+    }
     catch (e) { alert(e.message); }
     finally { setActionLoading(false); }
   };
@@ -55,103 +76,132 @@ function AdminPanel() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-12 px-4">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-extrabold text-indigo-600 mb-1">Admin Panel</h1>
-        <p className="text-gray-500 text-sm mb-8">Manage all campus resource bookings.</p>
+    <div className="ap-root">
+      <AdminSidebar />
 
-        <div className="flex gap-2 flex-wrap mb-6">
-          {TABS.map((t) => (
-            <button key={t} onClick={() => setTab(t)}
-              className={`px-4 py-1.5 rounded-full text-sm font-semibold transition duration-200 ${
-                tab === t
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-indigo-50 hover:text-indigo-600'
-              }`}>
-              {t}
-            </button>
-          ))}
+      <div className="ap-main">
+
+        {/* ── Top bar ── */}
+        <div className="ap-topbar">
+          <div>
+            <h1>Booking Management</h1>
+            <p>Review, approve and manage all campus resource bookings</p>
+          </div>
+          <div className="ap-topbar-right">
+            <button className="ap-refresh-btn" onClick={fetchBookings}>↺ Refresh</button>
+          </div>
         </div>
 
-        {loading && <p className="text-center text-gray-400 py-16">Loading...</p>}
-        {error && <p className="text-center text-red-500 py-16">{error}</p>}
+        <div className="ap-body">
 
-        {!loading && !error && bookings.length === 0 && (
-          <div className="text-center py-20">
-            <p className="text-5xl mb-3">📭</p>
-            <p className="text-gray-400">No bookings found.</p>
+          {/* ── Summary filter cards ── */}
+          <div className="ap-summary">
+            {TABS.map((t) => (
+              <div key={t}
+                className={`ap-sum-card${tab === t ? ' ap-sum-card-active' : ''}`}
+                onClick={() => setTab(t)}>
+                <div className={`ap-sum-icon ${TAB_META[t].cls}`}>{TAB_META[t].icon}</div>
+                <div>
+                  <div className="ap-sum-value">{counts[t] ?? 0}</div>
+                  <div className="ap-sum-label">{t}</div>
+                </div>
+              </div>
+            ))}
           </div>
-        )}
 
-        {!loading && !error && bookings.length > 0 && (
-          <div className="overflow-x-auto rounded-2xl shadow-md border border-indigo-50">
-            <table className="w-full bg-white text-sm">
-              <thead className="bg-indigo-50 text-indigo-600 text-xs uppercase tracking-wider">
-                <tr>
-                  {['ID', 'Resource', 'Email', 'Date', 'Time', 'Purpose', 'Attendees', 'Status', 'Actions'].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left font-semibold whitespace-nowrap">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {bookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-indigo-50 transition duration-150">
-                    <td className="px-4 py-3 font-semibold text-gray-800">#{b.id}</td>
-                    <td className="px-4 py-3 text-gray-600">{b.resourceId}</td>
-                    <td className="px-4 py-3 text-gray-600">{b.userEmail}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{b.bookingDate}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{b.startTime} – {b.endTime}</td>
-                    <td className="px-4 py-3 text-gray-600 max-w-xs truncate">{b.purpose}</td>
-                    <td className="px-4 py-3 text-gray-600">{b.attendees}</td>
-                    <td className="px-4 py-3"><StatusBadge status={b.status} /></td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-2 flex-wrap">
-                        {b.status === 'PENDING' && (
-                          <>
-                            <button onClick={() => handleApprove(b.id)} disabled={actionLoading}
-                              className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50">
-                              Approve
-                            </button>
-                            <button onClick={() => { setRejectModal(b.id); setRejectReason(''); }} disabled={actionLoading}
-                              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50">
-                              Reject
-                            </button>
-                          </>
-                        )}
-                        {b.status === 'APPROVED' && (
-                          <button onClick={() => handleCancel(b.id)} disabled={actionLoading}
-                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50">
-                            Cancel
-                          </button>
-                        )}
-                        <button onClick={() => handleDelete(b.id)} disabled={actionLoading}
-                          className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50">
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {/* ── Table ── */}
+          <div className="ap-table-card">
+            <div className="ap-table-header">
+              <span className="ap-table-title">
+                {tab === 'ALL' ? 'All Bookings' : `${tab} Bookings`}
+              </span>
+              <span className="ap-table-count">
+                {displayed.length} record{displayed.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {loading && (
+              <div className="ap-empty"><span className="ap-empty-icon">⏳</span>Loading…</div>
+            )}
+            {error && (
+              <div className="ap-empty" style={{ color: '#ef4444' }}>{error}</div>
+            )}
+            {!loading && !error && displayed.length === 0 && (
+              <div className="ap-empty">
+                <span className="ap-empty-icon">📭</span>
+                No {tab !== 'ALL' ? tab.toLowerCase() + ' ' : ''}bookings found.
+              </div>
+            )}
+
+            {!loading && !error && displayed.length > 0 && (
+              <div className="ap-table-wrap">
+                <table className="ap-table">
+                  <thead>
+                    <tr>
+                      {['ID', 'Resource', 'User', 'Email', 'Date', 'Time', 'Purpose', 'Attendees', 'Status', 'Actions'].map(h => (
+                        <th key={h}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {displayed.map((b) => (
+                      <tr key={b.id}>
+                        <td className="ap-table-id">#{b.id}</td>
+                        <td>{b.resourceId}</td>
+                        <td>{b.userId}</td>
+                        <td>{b.userEmail}</td>
+                        <td style={{ whiteSpace: 'nowrap' }}>{b.bookingDate}</td>
+                        <td style={{ whiteSpace: 'nowrap' }}>{b.startTime} – {b.endTime}</td>
+                        <td className="ap-table-truncate">{b.purpose}</td>
+                        <td>{b.attendees}</td>
+                        <td><StatusBadge status={b.status} /></td>
+                        <td>
+                          <div className="ap-actions">
+                            {b.status === 'PENDING' && (
+                              <>
+                                <button className="ap-btn ap-btn-approve" disabled={actionLoading}
+                                  onClick={() => handleApprove(b.id)}>Approve</button>
+                                <button className="ap-btn ap-btn-reject" disabled={actionLoading}
+                                  onClick={() => { setRejectModal(b.id); setRejectReason(''); }}>Reject</button>
+                              </>
+                            )}
+                            {b.status === 'APPROVED' && (
+                              <button className="ap-btn ap-btn-cancel" disabled={actionLoading}
+                                onClick={() => handleCancel(b.id)}>Cancel</button>
+                            )}
+                            <button className="ap-btn ap-btn-delete" disabled={actionLoading}
+                              onClick={() => handleDelete(b.id)}>Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        )}
+
+        </div>
       </div>
 
+      {/* ── Reject modal ── */}
       {rejectModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
-            <h2 className="text-lg font-bold text-gray-800 mb-4">Reject Booking #{rejectModal}</h2>
-            <textarea rows={3} placeholder="Enter rejection reason..."
-              value={rejectReason} onChange={(e) => setRejectReason(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 mb-4 resize-none" />
-            <div className="flex gap-3">
-              <button onClick={handleReject} disabled={actionLoading}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-semibold transition disabled:opacity-50">
+        <div className="ap-modal-overlay" onClick={() => setRejectModal(null)}>
+          <div className="ap-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Reject Booking #{rejectModal}</h2>
+            <textarea
+              rows={3}
+              placeholder="Enter rejection reason…"
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+            />
+            <div className="ap-modal-actions">
+              <button className="ap-modal-btn ap-modal-btn-confirm"
+                onClick={handleReject} disabled={actionLoading}>
                 Confirm Reject
               </button>
-              <button onClick={() => setRejectModal(null)}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg text-sm font-semibold transition">
+              <button className="ap-modal-btn ap-modal-btn-cancel"
+                onClick={() => setRejectModal(null)}>
                 Cancel
               </button>
             </div>

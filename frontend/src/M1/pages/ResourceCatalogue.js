@@ -77,6 +77,19 @@ export default function ResourceCatalogue() {
 
   return (
     <div className="m1-page">
+      {/* ── Page header ── */}
+      <div className="m1-page-header">
+        <div>
+          <h1>🏫 Campus Resources</h1>
+          <p>Browse and book available campus facilities and equipment</p>
+        </div>
+        {isAdmin && (
+          <span style={{ fontSize: 12, color: '#3b82f6', background: '#eff6ff', padding: '4px 12px', borderRadius: 20, fontWeight: 700, border: '1px solid #bfdbfe' }}>
+            🛡️ Admin Mode
+          </span>
+        )}
+      </div>
+
       <ResourceFilter onFilter={handleFilter} onReset={loadAll} />
 
       <div className="m1-controls">

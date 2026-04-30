@@ -1,0 +1,240 @@
+/* BookingForm.css */
+.bf-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 40px 24px 60px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.bf-container {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* ── Back button ─────────────────────────────────────── */
+.bf-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 24px;
+  font-family: inherit;
+  transition: color 0.2s;
+}
+.bf-back:hover { color: #3b82f6; }
+
+/* ── Page header ─────────────────────────────────────── */
+.bf-header {
+  margin-bottom: 28px;
+}
+
+.bf-header h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px;
+}
+
+.bf-header p {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* ── Card ────────────────────────────────────────────── */
+.bf-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+/* ── Section inside card ─────────────────────────────── */
+.bf-section {
+  padding: 24px 28px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.bf-section:last-of-type { border-bottom: none; }
+
+.bf-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #94a3b8;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ── Field ───────────────────────────────────────────── */
+.bf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bf-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.bf-input {
+  padding: 11px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #0f172a;
+  background: #ffffff;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.bf-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+
+.bf-input-readonly {
+  background: #f0f7ff;
+  border-color: #bfdbfe;
+  color: #1e40af;
+  font-weight: 600;
+  cursor: not-allowed;
+}
+
+/* ── Row ─────────────────────────────────────────────── */
+.bf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Auto-filled badge ───────────────────────────────── */
+.bf-auto-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #3b82f6;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* ── Alert ───────────────────────────────────────────── */
+.bf-alert {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  margin: 0 28px 0;
+}
+
+.bf-alert-danger  { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+.bf-alert-warning { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; }
+
+.bf-alert-icon { font-size: 18px; flex-shrink: 0; }
+
+.bf-alert-title { font-weight: 700; margin-bottom: 3px; }
+.bf-alert-msg   { font-size: 12px; opacity: 0.85; }
+
+/* ── Submit section ──────────────────────────────────── */
+.bf-submit-section {
+  padding: 20px 28px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bf-submit-hint {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.bf-submit-btn {
+  padding: 12px 32px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+  white-space: nowrap;
+}
+
+.bf-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59,130,246,0.45);
+}
+
+.bf-submit-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 640px) {
+  .bf-page { padding: 24px 16px 48px; }
+  .bf-row  { grid-template-columns: 1fr; }
+  .bf-section { padding: 20px 18px; }
+  .bf-submit-section { flex-direction: column; align-items: stretch; }
+  .bf-submit-btn { width: 100%; text-align: center; }
+}
+
+/* ── Resource name display ───────────────────────────── */
+.bf-resource-name {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1e40af;
+}
+
+/* ── Capacity feedback ───────────────────────────────── */
+.bf-capacity-hint {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.bf-capacity-warn {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 7px 12px;
+  margin-top: 4px;
+}

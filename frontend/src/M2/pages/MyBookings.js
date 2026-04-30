@@ -1,102 +1,173 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { getAllBookings, getBookingsByUser } from '../api/bookingApi';
+import { Link, useNavigate } from 'react-router-dom';
+import { getBookingsByUser } from '../api/bookingApi';
+import { getAllResources } from '../../M1/api/resourceApi';
 import StatusBadge from '../components/StatusBadge';
+import { useAuth } from '../../M5/useAuth';
+import './MyBookings.css';
+
+const FILTERS = ['ALL', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'];
 
 function MyBookings() {
+  const { user }    = useAuth();
+  const navigate    = useNavigate();
   const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [userId, setUserId] = useState('');
-  const [searching, setSearching] = useState(false);
+  const [resourceMap, setResourceMap] = useState({});
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState('');
+  const [filter, setFilter]     = useState('ALL');
 
   useEffect(() => {
-    getAllBookings()
-      .then(setBookings)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!userId.trim()) {
-      setLoading(true);
-      getAllBookings().then(setBookings).catch((e) => setError(e.message)).finally(() => setLoading(false));
-      return;
-    }
-    setSearching(true);
-    setError('');
-    try { setBookings(await getBookingsByUser(userId)); }
-    catch (err) { setError(err.message); }
-    finally { setSearching(false); }
-  };
-
-  const handleClear = () => {
-    setUserId('');
+    if (!user?.id) { setLoading(false); return; }
     setLoading(true);
     setError('');
-    getAllBookings().then(setBookings).catch((e) => setError(e.message)).finally(() => setLoading(false));
+    Promise.all([
+      getBookingsByUser(user.id),
+      getAllResources(),
+    ])
+      .then(([bookingData, resourceData]) => {
+        setBookings(bookingData);
+        const map = {};
+        resourceData.forEach(r => { map[r.id] = r.name; });
+        setResourceMap(map);
+      })
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [user]);
+
+  const displayed = filter === 'ALL'
+    ? bookings
+    : bookings.filter((b) => b.status === filter);
+
+  const statusClass = (status) => {
+    const map = {
+      PENDING:   'mb-card-pending',
+      APPROVED:  'mb-card-approved',
+      REJECTED:  'mb-card-rejected',
+      CANCELLED: 'mb-card-cancelled',
+    };
+    return map[status] || '';
   };
 
+  if (!user) return (
+    <div className="mb-page">
+      <div className="mb-empty">
+        <span className="mb-empty-icon">🔐</span>
+        <h3>Login Required</h3>
+        <p>Please sign in to view your bookings.</p>
+        <button className="mb-new-btn" onClick={() => navigate('/login')}
+          style={{ marginTop: 16 }}>Sign In</button>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-12 px-4">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-extrabold text-indigo-600 mb-1">My Bookings</h1>
-        <p className="text-gray-500 text-sm mb-8">All bookings shown below. Search by User ID to filter.</p>
+    <div className="mb-page">
 
-        <form onSubmit={handleSearch} className="flex gap-3 mb-8 flex-wrap">
-          <input
-            type="number" placeholder="Search by User ID..."
-            value={userId} onChange={(e) => setUserId(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 w-56"
-          />
-          <button type="submit" disabled={searching}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition disabled:opacity-50">
-            {searching ? 'Searching...' : 'Search'}
-          </button>
-          {userId && (
-            <button type="button" onClick={handleClear}
-              className="bg-white border border-gray-300 text-gray-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition">
-              Clear
+      {/* ── Header ── */}
+      <div className="mb-header">
+        <div className="mb-header-left">
+          <h1>My Bookings</h1>
+          <p>All bookings made by {user.name}</p>
+        </div>
+        <Link to="/book" className="mb-new-btn">+ New Booking</Link>
+      </div>
+
+      {/* ── Filter tabs ── */}
+      <div className="mb-filters">
+        {FILTERS.map((f) => {
+          const count = f === 'ALL' ? bookings.length : bookings.filter(b => b.status === f).length;
+          return (
+            <button key={f}
+              className={`mb-filter-btn${filter === f ? ' mb-filter-btn-active' : ''}`}
+              onClick={() => setFilter(f)}>
+              {f} {count > 0 && `(${count})`}
             </button>
-          )}
-        </form>
+          );
+        })}
+      </div>
 
-        {loading && <p className="text-center text-gray-400 py-16">Loading...</p>}
-        {error && <p className="text-center text-red-500 py-16">{error}</p>}
-        {!loading && !error && bookings.length === 0 && (
-          <p className="text-center text-gray-400 py-16">No bookings found.</p>
-        )}
+      {/* ── States ── */}
+      {loading && <div className="mb-loading">⏳ Loading your bookings…</div>}
+      {error   && <div className="mb-error">⚠ {error}</div>}
 
-        {!loading && !error && bookings.length > 0 && (
-          <>
-            <p className="text-xs text-gray-400 mb-4">{bookings.length} booking(s) found</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {bookings.map((b) => (
-                <div key={b.id} className="bg-white rounded-2xl shadow-md p-5 border border-indigo-50 hover:shadow-lg transition duration-200">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="font-bold text-gray-800 text-sm">Booking #{b.id}</span>
-                    <StatusBadge status={b.status} />
+      {!loading && !error && bookings.length === 0 && (
+        <div className="mb-empty">
+          <span className="mb-empty-icon">📭</span>
+          <h3>No bookings yet</h3>
+          <p>You haven't made any bookings. Start by booking a resource.</p>
+          <Link to="/book" className="mb-new-btn" style={{ marginTop: 16, display: 'inline-flex' }}>
+            + Book a Resource
+          </Link>
+        </div>
+      )}
+
+      {!loading && !error && bookings.length > 0 && displayed.length === 0 && (
+        <div className="mb-empty">
+          <span className="mb-empty-icon">🔍</span>
+          <h3>No {filter.toLowerCase()} bookings</h3>
+          <p>You have no bookings with this status.</p>
+        </div>
+      )}
+
+      {!loading && !error && displayed.length > 0 && (
+        <>
+          <p className="mb-count">{displayed.length} booking{displayed.length !== 1 ? 's' : ''}</p>
+          <div className="mb-grid">
+            {displayed.map((b) => (
+              <div key={b.id} className={`mb-card ${statusClass(b.status)}`}>
+
+                <div className="mb-card-header">
+                  <span className="mb-card-id">Booking #{b.id}</span>
+                  <StatusBadge status={b.status} />
+                </div>
+
+                <div className="mb-card-info">
+                  <div className="mb-info-row">
+                    <span className="mb-info-icon">🏢</span>
+                    <span className="mb-info-label">Resource</span>
+                    <span className="mb-info-value">
+                      {resourceMap[b.resourceId] || `Resource #${b.resourceId}`}
+                    </span>
                   </div>
-                  <div className="text-xs text-gray-500 space-y-1 mb-4">
-                    <p>📅 {b.bookingDate}</p>
-                    <p>⏰ {b.startTime} – {b.endTime}</p>
-                    <p>🏢 Resource: {b.resourceId}</p>
-                    <p>👤 User: {b.userId}</p>
-                    <p className="truncate">📝 {b.purpose}</p>
+                  <div className="mb-info-row">
+                    <span className="mb-info-icon">📅</span>
+                    <span className="mb-info-label">Date</span>
+                    <span className="mb-info-value">{b.bookingDate}</span>
                   </div>
-                  {b.rejectionReason && (
-                    <p className="text-xs text-red-500 mb-3">Reason: {b.rejectionReason}</p>
-                  )}
-                  <Link to={`/bookings/${b.id}`} className="text-indigo-600 text-xs font-semibold hover:underline">
+                  <div className="mb-info-row">
+                    <span className="mb-info-icon">⏰</span>
+                    <span className="mb-info-label">Time</span>
+                    <span className="mb-info-value">{b.startTime} – {b.endTime}</span>
+                  </div>
+                  <div className="mb-info-row">
+                    <span className="mb-info-icon">👥</span>
+                    <span className="mb-info-label">Attendees</span>
+                    <span className="mb-info-value">{b.attendees}</span>
+                  </div>
+                  <div className="mb-info-row">
+                    <span className="mb-info-icon">📝</span>
+                    <span className="mb-info-label">Purpose</span>
+                    <span className="mb-info-value">{b.purpose}</span>
+                  </div>
+                </div>
+
+                {b.rejectionReason && (
+                  <div className="mb-rejection">
+                    ❌ Rejection reason: {b.rejectionReason}
+                  </div>
+                )}
+
+                <div className="mb-card-footer">
+                  <Link to={`/bookings/${b.id}`} className="mb-card-link">
                     View Details →
                   </Link>
                 </div>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

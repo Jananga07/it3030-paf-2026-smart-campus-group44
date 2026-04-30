@@ -18,7 +18,6 @@ function Navbar() {
     : [
         { to: '/resources',      label: 'Resources' },
         { to: '/my-bookings',    label: 'My Bookings' },
-        { to: '/book',           label: 'New Booking' },
         { to: '/tickets/create', label: '+ Add Ticket' },
       ];
 
