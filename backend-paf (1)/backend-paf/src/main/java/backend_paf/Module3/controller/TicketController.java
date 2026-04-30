@@ -3,6 +3,7 @@ package backend_paf.Module3.controller;
 import backend_paf.Module3.model.Ticket;
 import backend_paf.Module3.model.TicketStatus;
 import backend_paf.Module3.service.TicketService;
+import backend_paf.Module5.entity.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,5 +67,25 @@ public class TicketController {
         
         Ticket updatedTicket = ticketService.addResolutionNotes(id, notes, userId);
         return ResponseEntity.ok(updatedTicket);
+    }
+
+    @PostMapping("/{id}/assign")
+    public ResponseEntity<Ticket> assignTechnician(
+            @PathVariable Long id,
+            @RequestParam("technicianId") Long technicianId,
+            @RequestParam("adminId") Long adminId) {
+        Ticket updatedTicket = ticketService.assignTechnician(id, technicianId, adminId);
+        return ResponseEntity.ok(updatedTicket);
+    }
+
+    @GetMapping("/technicians")
+    public ResponseEntity<List<AppUser>> getTechnicians() {
+        return ResponseEntity.ok(ticketService.getTechnicians());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTicket(@PathVariable Long id, @RequestParam Long adminId) {
+        ticketService.deleteTicket(id, adminId);
+        return ResponseEntity.noContent().build();
     }
 }

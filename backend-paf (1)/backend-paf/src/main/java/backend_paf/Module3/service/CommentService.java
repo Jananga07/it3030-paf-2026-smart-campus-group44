@@ -44,6 +44,7 @@ public class CommentService {
         comment.setTicket(ticket);
         comment.setUserId(userId);
         comment.setUserName(user.getName());
+        comment.setUserRole(user.getRole().name());
 
         Comment saved = commentRepository.save(comment);
 

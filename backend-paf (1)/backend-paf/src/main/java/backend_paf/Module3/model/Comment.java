@@ -24,6 +24,9 @@ public class Comment {
     @Column(name = "user_name")
     private String userName;
 
+    @Column(name = "user_role")
+    private String userRole;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -52,6 +55,9 @@ public class Comment {
 
     public String getUserName()                { return userName; }
     public void setUserName(String userName)   { this.userName = userName; }
+
+    public String getUserRole()                { return userRole; }
+    public void setUserRole(String userRole)   { this.userRole = userRole; }
 
     public LocalDateTime getCreatedAt()        { return createdAt; }
     public LocalDateTime getUpdatedAt()        { return updatedAt; }

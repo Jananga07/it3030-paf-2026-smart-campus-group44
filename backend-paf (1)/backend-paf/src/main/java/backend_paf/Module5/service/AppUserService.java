@@ -3,6 +3,7 @@ package backend_paf.Module5.service;
 import backend_paf.Module5.dto.LoginRequestDto;
 import backend_paf.Module5.dto.RegisterRequestDto;
 import backend_paf.Module5.entity.AppUser;
+import backend_paf.Module5.entity.Role;
 import backend_paf.Module5.repository.AppUserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -70,6 +71,17 @@ public class AppUserService {
         }
         String hashed = encoder.encode(dto.getPassword());
         AppUser user  = new AppUser(dto.getName(), dto.getEmail(), hashed);
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public AppUser registerTechnician(String name, String email, String password) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Email already registered.");
+        }
+        String hashed = encoder.encode(password);
+        AppUser user = new AppUser(name, email, hashed);
+        user.setRole(Role.TECHNICIAN);
         return userRepository.save(user);
     }
 
