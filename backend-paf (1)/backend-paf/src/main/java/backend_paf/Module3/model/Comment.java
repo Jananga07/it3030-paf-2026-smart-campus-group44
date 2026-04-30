@@ -18,9 +18,11 @@ public class Comment {
     @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @Column(name = "user_name")
+    private String userName;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -36,44 +38,21 @@ public class Comment {
         updatedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId()                        { return id; }
+    public void setId(Long id)                 { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getText()                    { return text; }
+    public void setText(String text)           { this.text = text; }
 
-    public String getText() {
-        return text;
-    }
+    public Ticket getTicket()                  { return ticket; }
+    public void setTicket(Ticket ticket)       { this.ticket = ticket; }
 
-    public void setText(String text) {
-        this.text = text;
-    }
+    public Long getUserId()                    { return userId; }
+    public void setUserId(Long userId)         { this.userId = userId; }
 
-    public Ticket getTicket() {
-        return ticket;
-    }
+    public String getUserName()                { return userName; }
+    public void setUserName(String userName)   { this.userName = userName; }
 
-    public void setTicket(Ticket ticket) {
-        this.ticket = ticket;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+    public LocalDateTime getCreatedAt()        { return createdAt; }
+    public LocalDateTime getUpdatedAt()        { return updatedAt; }
 }

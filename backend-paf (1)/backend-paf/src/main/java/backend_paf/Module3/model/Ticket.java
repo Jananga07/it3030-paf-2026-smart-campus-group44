@@ -42,9 +42,8 @@ public class Ticket {
     @Column(name = "file_path")
     private List<String> attachedEvidences;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @Column(length = 1000)
     private String resolutionNotes;
@@ -148,12 +147,12 @@ public class Ticket {
         this.attachedEvidences = attachedEvidences;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getResolutionNotes() {

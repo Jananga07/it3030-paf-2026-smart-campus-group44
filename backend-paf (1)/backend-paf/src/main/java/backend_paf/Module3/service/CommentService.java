@@ -2,13 +2,12 @@ package backend_paf.Module3.service;
 
 import backend_paf.Module3.model.Comment;
 import backend_paf.Module3.model.Ticket;
-import backend_paf.Module3.model.User;
-import backend_paf.Module3.model.Role;
 import backend_paf.Module3.repository.CommentRepository;
 import backend_paf.Module3.repository.TicketRepository;
-import backend_paf.Module3.repository.UserRepository;
-// Module 4 – notification integration
 import backend_paf.Module4.service.NotificationEventService;
+import backend_paf.Module5.entity.AppUser;
+import backend_paf.Module5.entity.Role;
+import backend_paf.Module5.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +23,8 @@ public class CommentService {
     private TicketRepository ticketRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private AppUserRepository appUserRepository;
 
-    // Module 4 – triggers in-app notifications on new comments
     @Autowired
     private NotificationEventService notificationEventService;
 
@@ -38,24 +36,24 @@ public class CommentService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
-        User user = userRepository.findById(userId)
+        AppUser user = appUserRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Comment comment = new Comment();
         comment.setText(text);
         comment.setTicket(ticket);
-        comment.setUser(user);
+        comment.setUserId(userId);
+        comment.setUserName(user.getName());
 
         Comment saved = commentRepository.save(comment);
 
-        // Module 4 – notify ticket owner if commenter is different
         try {
-            Long ticketOwnerId = ticket.getUser().getId();
+            Long ticketOwnerId = ticket.getUserId();
             if (!ticketOwnerId.equals(userId)) {
                 notificationEventService.notifyNewTicketComment(
                         ticketOwnerId, ticketId, user.getName());
             }
-        } catch (Exception ignored) { /* don't fail comment if notification fails */ }
+        } catch (Exception ignored) { }
 
         return saved;
     }
@@ -68,15 +66,14 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        User user = userRepository.findById(userId)
+        AppUser user = appUserRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Allow delete if owner OR admin OR technician
-        boolean isOwner = comment.getUser().getId().equals(userId);
-        boolean isStaff = user.getRole() == Role.ADMIN || user.getRole() == Role.TECHNICIAN;
+        boolean isOwner = comment.getUserId().equals(userId);
+        boolean isAdmin = user.getRole() == Role.ADMIN;
 
-        if (!isOwner && !isStaff) {
-            throw new RuntimeException("Unauthorized action. You do not have permission to delete this comment.");
+        if (!isOwner && !isAdmin) {
+            throw new RuntimeException("Unauthorized: you cannot delete this comment.");
         }
 
         commentRepository.delete(comment);
@@ -90,15 +87,14 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        User user = userRepository.findById(userId)
+        AppUser user = appUserRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Allow update if owner OR admin OR technician
-        boolean isOwner = comment.getUser().getId().equals(userId);
-        boolean isStaff = user.getRole() == Role.ADMIN || user.getRole() == Role.TECHNICIAN;
+        boolean isOwner = comment.getUserId().equals(userId);
+        boolean isAdmin = user.getRole() == Role.ADMIN;
 
-        if (!isOwner && !isStaff) {
-            throw new RuntimeException("Unauthorized action. You do not have permission to edit this comment.");
+        if (!isOwner && !isAdmin) {
+            throw new RuntimeException("Unauthorized: you cannot edit this comment.");
         }
 
         comment.setText(newText);
