@@ -3,284 +3,229 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../M5/useAuth';
 import { ticketApi, categoryApi } from '../api/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import '../styles/module3.css';
+import '../styles/ticket-dashboard.css';
+import '../styles/create-ticket.css';
+
+const PRIORITY_OPTIONS = [
+  { value: 'High',   label: '🔴 High',   color: '#ef4444', bg: '#fef2f2' },
+  { value: 'Medium', label: '🟡 Medium', color: '#f59e0b', bg: '#fffbeb' },
+  { value: 'Low',    label: '🟢 Low',    color: '#22c55e', bg: '#f0fdf4' },
+];
 
 const CreateTicket = () => {
-    const { user } = useAuth();
-    const navigate = useNavigate();
-    
-    const [formData, setFormData] = useState({
-        title: '',
-        priority: 'Medium',
-        category: '',
-        location: '',
-        email: user?.email || '',
-        contactInfo: '',
-        description: ''
+  const { user }   = useAuth();
+  const navigate   = useNavigate();
+
+  const [formData, setFormData] = useState({
+    title: '', priority: 'Medium', category: '',
+    location: '', email: user?.email || '',
+    contactInfo: '', description: '',
+  });
+  const [categories, setCategories]   = useState([]);
+  const [files, setFiles]             = useState([]);
+  const [previews, setPreviews]       = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError]             = useState('');
+
+  useEffect(() => {
+    categoryApi.getAllCategories()
+      .then(setCategories)
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (user?.email) setFormData(p => ({ ...p, email: user.email }));
+  }, [user]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(p => ({ ...p, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    const selected = Array.from(e.target.files);
+    if (selected.length + files.length > 3) { alert('Maximum 3 images allowed'); return; }
+    const valid = selected.filter(f => {
+      const ext = f.name.substring(f.name.lastIndexOf('.')).toLowerCase();
+      return ['.jpg', '.jpeg', '.png'].includes(ext) && f.size <= 5 * 1024 * 1024;
     });
+    setFiles(p => [...p, ...valid]);
+    setPreviews(p => [...p, ...valid.map(f => URL.createObjectURL(f))]);
+  };
 
-    const [categories, setCategories] = useState([]);
-    const [files, setFiles] = useState([]);
-    const [previews, setPreviews] = useState([]);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState('');
+  const removeFile = (i) => {
+    URL.revokeObjectURL(previews[i]);
+    setFiles(p => p.filter((_, idx) => idx !== i));
+    setPreviews(p => p.filter((_, idx) => idx !== i));
+  };
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const data = await categoryApi.getAllCategories();
-                setCategories(data);
-            } catch (err) {
-                console.error("Failed to fetch categories", err);
-            }
-        };
-        fetchCategories();
-    }, []);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.description.length < 10) { setError('Description must be at least 10 characters.'); return; }
+    setIsSubmitting(true); setError('');
+    const data = new FormData();
+    data.append('userId', user.id);
+    data.append('title', formData.title);
+    data.append('description', formData.description);
+    data.append('category', formData.category);
+    data.append('location', formData.location);
+    data.append('email', formData.email);
+    data.append('contactInfo', formData.contactInfo);
+    data.append('priorityLevel', formData.priority);
+    files.forEach(f => data.append('evidences', f));
+    try {
+      await ticketApi.createTicket(data);
+      navigate('/tickets');
+    } catch (err) {
+      setError(err.message);
+    } finally { setIsSubmitting(false); }
+  };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
+  return (
+    <div className="ct-page">
+      <div className="ct-container">
 
-    const handleFileChange = (e) => {
-        const selectedFiles = Array.from(e.target.files);
-        
-        if (selectedFiles.length + files.length > 3) {
-            alert('Maximum 3 images allowed');
-            return;
-        }
+        {/* ── Header ── */}
+        <motion.div className="ct-header"
+          initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}>
+          <button className="ct-back" onClick={() => navigate('/tickets')}>← Back</button>
+          <div>
+            <h1 className="ct-title">🎫 Create New Ticket</h1>
+            <p className="ct-sub">Fill out the form below to submit a support request</p>
+          </div>
+        </motion.div>
 
-        const validFiles = selectedFiles.filter(file => {
-            const isValidType = ['.jpg', '.jpeg', '.png'].includes(file.name.substring(file.name.lastIndexOf('.')).toLowerCase());
-            const isValidSize = file.size <= 5 * 1024 * 1024;
-            return isValidType && isValidSize;
-        });
+        <motion.form onSubmit={handleSubmit} className="ct-form"
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}>
 
-        const newFiles = [...files, ...validFiles];
-        setFiles(newFiles);
-        
-        const newPreviews = validFiles.map(file => URL.createObjectURL(file));
-        setPreviews([...previews, ...newPreviews]);
-    };
+          {/* ── Section 1: Basic Info ── */}
+          <div className="ct-section">
+            <div className="ct-section-title">📋 Basic Information</div>
 
-    const removeFile = (index) => {
-        const newFiles = [...files];
-        newFiles.splice(index, 1);
-        setFiles(newFiles);
+            <div className="ct-field">
+              <label className="ct-label">Ticket Title <span className="ct-req">*</span></label>
+              <input name="title" className="ct-input"
+                placeholder="Brief title describing the issue"
+                value={formData.title} onChange={handleChange} required />
+            </div>
 
-        const newPreviews = [...previews];
-        URL.revokeObjectURL(newPreviews[index]);
-        newPreviews.splice(index, 1);
-        setPreviews(newPreviews);
-    };
+            <div className="ct-row">
+              {/* Priority selector */}
+              <div className="ct-field">
+                <label className="ct-label">Priority <span className="ct-req">*</span></label>
+                <div className="ct-priority-group">
+                  {PRIORITY_OPTIONS.map(p => (
+                    <button key={p.value} type="button"
+                      className={`ct-priority-btn${formData.priority === p.value ? ' ct-priority-active' : ''}`}
+                      style={formData.priority === p.value ? { background: p.bg, borderColor: p.color, color: p.color } : {}}
+                      onClick={() => setFormData(prev => ({ ...prev, priority: p.value }))}>
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (formData.description.length < 10) {
-            setError('Description must be at least 10 characters.');
-            return;
-        }
+              <div className="ct-field">
+                <label className="ct-label">Category <span className="ct-req">*</span></label>
+                <select name="category" className="ct-input"
+                  value={formData.category} onChange={handleChange} required>
+                  <option value="">Select a category</option>
+                  {categories.map(c => (
+                    <option key={c.id} value={c.name}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
 
-        setIsSubmitting(true);
-        setError('');
+          {/* ── Section 2: Location & Contact ── */}
+          <div className="ct-section">
+            <div className="ct-section-title">📍 Location & Contact</div>
+            <div className="ct-row">
+              <div className="ct-field">
+                <label className="ct-label">Location / Resource <span className="ct-req">*</span></label>
+                <input name="location" className="ct-input"
+                  placeholder="e.g. Room 101, Lab A, Server Room"
+                  value={formData.location} onChange={handleChange} required />
+              </div>
+              <div className="ct-field">
+                <label className="ct-label">Email <span className="ct-req">*</span></label>
+                <input name="email" type="email" className="ct-input ct-input-auto"
+                  value={formData.email} onChange={handleChange} required />
+              </div>
+            </div>
+            <div className="ct-field">
+              <label className="ct-label">Contact Info <span className="ct-req">*</span></label>
+              <input name="contactInfo" className="ct-input"
+                placeholder="Phone number or alternative contact"
+                value={formData.contactInfo} onChange={handleChange} required />
+            </div>
+          </div>
 
-        const data = new FormData();
-        data.append('userId', user.id);
-        data.append('title', formData.title);
-        data.append('description', formData.description);
-        data.append('category', formData.category);
-        data.append('location', formData.location);
-        data.append('email', formData.email);
-        data.append('contactInfo', formData.contactInfo);
-        data.append('priorityLevel', formData.priority);
-        
-        files.forEach(file => {
-            data.append('evidences', file);
-        });
+          {/* ── Section 3: Description ── */}
+          <div className="ct-section">
+            <div className="ct-section-title">📝 Description</div>
+            <div className="ct-field">
+              <label className="ct-label">Describe the issue <span className="ct-req">*</span></label>
+              <textarea name="description" className="ct-input ct-textarea"
+                rows={5}
+                placeholder="Provide detailed information about your issue or request (min. 10 characters)"
+                value={formData.description} onChange={handleChange}
+                maxLength={1000} required />
+              <div className="ct-char-count">{formData.description.length} / 1000</div>
+            </div>
+          </div>
 
-        try {
-            await ticketApi.createTicket(data);
-            navigate('/tickets');
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+          {/* ── Section 4: Attachments ── */}
+          <div className="ct-section">
+            <div className="ct-section-title">📎 Attachments <span className="ct-optional">(optional, max 3)</span></div>
+            <div className="ct-upload-zone" onClick={() => document.getElementById('ct-file').click()}>
+              <div className="ct-upload-icon">📁</div>
+              <div className="ct-upload-text">Click to upload images</div>
+              <div className="ct-upload-hint">JPG, JPEG, PNG — max 5MB each</div>
+              <input id="ct-file" type="file" multiple accept=".jpg,.jpeg,.png"
+                onChange={handleFileChange} style={{ display: 'none' }} />
+            </div>
 
-    return (
-        <div className="m3-container">
-            <motion.div 
-                className="glass-card"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-            >
-                <h1 className="m3-title">Create New Ticket</h1>
-                <p className="m3-subtitle">Fill out the form below to create a new support ticket</p>
-                
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label className="form-label">Ticket Title <span>*</span></label>
-                        <input 
-                            name="title"
-                            className="form-input"
-                            placeholder="Enter a brief title for your ticket"
-                            value={formData.title}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+            {previews.length > 0 && (
+              <div className="ct-previews">
+                <AnimatePresence>
+                  {previews.map((src, i) => (
+                    <motion.div key={src} className="ct-preview"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}>
+                      <img src={src} alt="preview" />
+                      <button type="button" className="ct-preview-remove"
+                        onClick={() => removeFile(i)}>×</button>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
+          </div>
 
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label className="form-label">Priority <span>*</span></label>
-                            <select 
-                                name="priority"
-                                className="form-select"
-                                value={formData.priority}
-                                onChange={handleChange}
-                                required
-                            >
-                                <option value="High">High</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Low">Low</option>
-                            </select>
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Category <span>*</span></label>
-                            <select 
-                                name="category"
-                                className="form-select"
-                                value={formData.category}
-                                onChange={handleChange}
-                                required
-                            >
-                                <option value="">Select a category</option>
-                                {categories.map(cat => (
-                                    <option key={cat.id} value={cat.name}>{cat.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
+          {/* ── Error ── */}
+          {error && (
+            <div className="ct-error">{error}</div>
+          )}
 
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label className="form-label">Location/Resource <span>*</span></label>
-                            <input 
-                                name="location"
-                                className="form-input"
-                                placeholder="e.g., Room 101, Server Room"
-                                value={formData.location}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Email <span>*</span></label>
-                            <input 
-                                name="email"
-                                type="email"
-                                className="form-input"
-                                placeholder="your.email@company.com"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                    </div>
+          {/* ── Actions ── */}
+          <div className="ct-actions">
+            <button type="button" className="ct-btn-cancel"
+              onClick={() => navigate('/tickets')}>
+              Cancel
+            </button>
+            <button type="submit" className="ct-btn-submit" disabled={isSubmitting}>
+              {isSubmitting ? '⏳ Submitting…' : '📤 Submit Ticket'}
+            </button>
+          </div>
 
-                    <div className="form-group">
-                        <label className="form-label">Contact Info <span>*</span></label>
-                        <input 
-                            name="contactInfo"
-                            className="form-input"
-                            placeholder="Phone number or alternative contact method"
-                            value={formData.contactInfo}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label className="form-label">Description <span>*</span></label>
-                        <textarea 
-                            name="description"
-                            className="form-textarea"
-                            rows="5"
-                            placeholder="Provide detailed information about your issue or request"
-                            value={formData.description}
-                            onChange={handleChange}
-                            maxLength={1000}
-                            required
-                        />
-                        <div style={{ textAlign: 'right', fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>
-                            {formData.description.length} / 1000
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label className="form-label">Attachments</label>
-                        <div className="file-upload-zone" onClick={() => document.getElementById('fileInput').click()}>
-                            <p style={{ color: 'var(--text-muted)', margin: 0 }}>Click to upload files</p>
-                            <input 
-                                id="fileInput"
-                                type="file" 
-                                multiple 
-                                accept=".jpg,.jpeg,.png"
-                                onChange={handleFileChange}
-                                style={{ display: 'none' }}
-                            />
-                        </div>
-                        
-                        <div className="evidence-preview">
-                            <AnimatePresence>
-                                {previews.map((src, i) => (
-                                    <motion.div 
-                                        key={src}
-                                        className="preview-container"
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        exit={{ opacity: 0, scale: 0.8 }}
-                                    >
-                                        <img src={src} alt="preview" className="preview-img" />
-                                        <button type="button" className="remove-file" onClick={() => removeFile(i)}>×</button>
-                                    </motion.div>
-                                ))}
-                            </AnimatePresence>
-                        </div>
-                    </div>
-
-                    {error && (
-                        <motion.p 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            style={{ color: 'var(--secondary)', marginBottom: '1.5rem', fontWeight: 600 }}
-                        >
-                            {error}
-                        </motion.p>
-                    )}
-
-                    <div style={{ display: 'flex', gap: '1.5rem', marginTop: '3rem' }}>
-                        <button 
-                            type="button" 
-                            className="m3-button m3-button-secondary" 
-                            onClick={() => navigate('/tickets')}
-                        >
-                            Cancel
-                        </button>
-                        <button 
-                            type="submit" 
-                            className="m3-button"
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? 'Submitting...' : 'Submit Ticket'}
-                        </button>
-                    </div>
-                </form>
-            </motion.div>
-        </div>
-    );
+        </motion.form>
+      </div>
+    </div>
+  );
 };
 
 export default CreateTicket;

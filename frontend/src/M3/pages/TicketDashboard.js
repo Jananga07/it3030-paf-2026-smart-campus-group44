@@ -4,148 +4,194 @@ import { useAuth } from '../../M5/useAuth';
 import { ticketApi } from '../api/client';
 import { motion } from 'framer-motion';
 import '../styles/module3.css';
+import '../styles/ticket-dashboard.css';
 
-const getStatusColor = (status) => {
-    switch (status) {
-        case 'OPEN':        return '#818cf8';
-        case 'IN_PROGRESS': return '#fbbf24';
-        case 'RESOLVED':    return '#34d399';
-        case 'REJECTED':    return '#f472b6';
-        case 'CLOSED':      return '#94a3b8';
-        default:            return '#ccc';
-    }
+const STATUS_CONFIG = {
+  OPEN:        { color: '#3b82f6', bg: '#eff6ff', border: '#bfdbfe', label: 'Open' },
+  IN_PROGRESS: { color: '#f59e0b', bg: '#fffbeb', border: '#fde68a', label: 'In Progress' },
+  RESOLVED:    { color: '#22c55e', bg: '#f0fdf4', border: '#bbf7d0', label: 'Resolved' },
+  REJECTED:    { color: '#ef4444', bg: '#fef2f2', border: '#fecaca', label: 'Rejected' },
+  CLOSED:      { color: '#64748b', bg: '#f8fafc', border: '#e2e8f0', label: 'Closed' },
 };
 
+const PRIORITY_CONFIG = {
+  High:   { color: '#ef4444', bg: '#fef2f2', dot: '#ef4444' },
+  Medium: { color: '#f59e0b', bg: '#fffbeb', dot: '#f59e0b' },
+  Low:    { color: '#22c55e', bg: '#f0fdf4', dot: '#22c55e' },
+};
+
+const FILTERS = ['ALL', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'REJECTED', 'CLOSED'];
+
 const TicketDashboard = () => {
-    const { user } = useAuth();
-    const [tickets, setTickets] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError]     = useState('');
-    const navigate = useNavigate();
+  const { user } = useAuth();
+  const [tickets, setTickets]   = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState('');
+  const [filter, setFilter]     = useState('ALL');
+  const navigate = useNavigate();
 
-    const fetchTickets = React.useCallback(async () => {
-        setLoading(true);
-        setError('');
-        try {
-            const data = await ticketApi.getAllTickets(user.id);
-            setTickets(Array.isArray(data) ? data : []);
-        } catch (err) {
-            console.error(err);
-            setError('Failed to load tickets.');
-            setTickets([]);
-        } finally {
-            setLoading(false);
-        }
-    }, [user?.id]);
+  const fetchTickets = React.useCallback(async () => {
+    setLoading(true); setError('');
+    try {
+      const data = await ticketApi.getAllTickets(user.id);
+      setTickets(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError('Failed to load tickets.');
+      setTickets([]);
+    } finally { setLoading(false); }
+  }, [user?.id]);
 
-    useEffect(() => {
-        if (user?.id) fetchTickets();
-        else setLoading(false);
-    }, [user, fetchTickets]);
+  useEffect(() => {
+    if (user?.id) fetchTickets();
+    else setLoading(false);
+  }, [user, fetchTickets]);
 
-    if (!user) return (
-        <div className="m3-container">
-            <div className="glass-card" style={{ textAlign: 'center' }}>
-                <p>Please log in to view tickets.</p>
-                <button className="m3-button" style={{ width: 'auto', marginTop: '1rem' }}
-                    onClick={() => navigate('/login')}>
-                    Sign In
-                </button>
-            </div>
+  if (!user) return (
+    <div className="td-page">
+      <div className="td-login-prompt">
+        <div className="td-login-icon">🎫</div>
+        <h2>Login Required</h2>
+        <p>Please sign in to view your tickets.</p>
+        <button className="td-btn td-btn-primary" onClick={() => navigate('/login')}>Sign In</button>
+      </div>
+    </div>
+  );
+
+  const counts = FILTERS.reduce((acc, f) => {
+    acc[f] = f === 'ALL' ? tickets.length : tickets.filter(t => t.status === f).length;
+    return acc;
+  }, {});
+
+  const displayed = filter === 'ALL' ? tickets : tickets.filter(t => t.status === filter);
+
+  return (
+    <div className="td-page">
+
+      {/* ── Header ── */}
+      <div className="td-header">
+        <div className="td-header-left">
+          <h1 className="td-title">🎫 Support Desk</h1>
+          <p className="td-subtitle">Welcome back, <strong>{user.name}</strong></p>
         </div>
-    );
-
-    return (
-        <div className="m3-container">
-            <header className="m3-header">
-                <div>
-                    <h1 className="m3-title">Support Desk</h1>
-                    <p style={{ color: 'var(--text-muted)' }}>
-                        Welcome back, {user.name} ({user.role})
-                    </p>
-                </div>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                    {user.role === 'ADMIN' && (
-                        <>
-                            <button className="m3-button m3-button-secondary"
-                                onClick={() => navigate('/admin/ticket-categories')}
-                                style={{ width: 'auto' }}>
-                                Manage Categories
-                            </button>
-                            <button className="m3-button m3-button-secondary"
-                                onClick={() => navigate('/admin/technicians')}
-                                style={{ width: 'auto' }}>
-                                Manage Technicians
-                            </button>
-                        </>
-                    )}
-                    <button className="m3-button" onClick={() => navigate('/tickets/create')} style={{ width: 'auto' }}>
-                        + New Ticket
-                    </button>
-                </div>
-            </header>
-
-            {error && (
-                <div className="glass-card" style={{ color: '#f472b6', marginBottom: '1.5rem' }}>
-                    {error}
-                </div>
-            )}
-
-            {loading ? (
-                <p>Loading tickets...</p>
-            ) : (
-                <div className="m3-grid">
-                    {tickets.map((ticket, index) => (
-                        <motion.div
-                            key={ticket.id}
-                            className="glass-card ticket-card"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.07 }}
-                            onClick={() => navigate(`/tickets/${ticket.id}`)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                <span className="status-badge"
-                                    style={{ background: getStatusColor(ticket.status) }}>
-                                    {ticket.status}
-                                </span>
-                                <span className={`priority-badge priority-${ticket.priorityLevel}`}>
-                                    {ticket.priorityLevel} Priority
-                                </span>
-                            </div>
-                            <h3 style={{ margin: '0 0 0.5rem 0' }}>
-                                {ticket.title || `Ticket #${ticket.id}`}
-                            </h3>
-                            <div style={{ fontSize: '0.85rem', color: 'var(--secondary)', marginBottom: '1rem', fontWeight: 600 }}>
-                                {ticket.category}
-                            </div>
-                            <p style={{
-                                color: 'var(--text-muted)',
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                                fontSize: '0.95rem',
-                            }}>
-                                {ticket.description}
-                            </p>
-                            <div style={{ marginTop: '1.5rem', fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between' }}>
-                                <span>{ticket.location}</span>
-                                <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
-                            </div>
-                        </motion.div>
-                    ))}
-
-                    {tickets.length === 0 && (
-                        <div className="glass-card" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
-                            <p>No tickets found. Create your first ticket!</p>
-                        </div>
-                    )}
-                </div>
-            )}
+        <div className="td-header-actions">
+          {user.role === 'ADMIN' && (
+            <>
+              <button className="td-btn td-btn-outline"
+                onClick={() => navigate('/admin/ticket-categories')}>
+                🗂 Categories
+              </button>
+              <button className="td-btn td-btn-outline"
+                onClick={() => navigate('/admin/technicians')}>
+                👷 Technicians
+              </button>
+            </>
+          )}
+          <button className="td-btn td-btn-primary"
+            onClick={() => navigate('/tickets/create')}>
+            + New Ticket
+          </button>
         </div>
-    );
+      </div>
+
+      {/* ── Status filter cards ── */}
+      <div className="td-status-row">
+        {FILTERS.map(f => {
+          const cfg = f === 'ALL' ? null : STATUS_CONFIG[f];
+          return (
+            <button key={f}
+              className={`td-status-card${filter === f ? ' td-status-card-active' : ''}`}
+              onClick={() => setFilter(f)}
+              style={filter === f && cfg ? { borderColor: cfg.color, background: cfg.bg } : {}}>
+              <div className="td-status-count"
+                style={filter === f && cfg ? { color: cfg.color } : {}}>
+                {counts[f] ?? 0}
+              </div>
+              <div className="td-status-label">
+                {f === 'ALL' ? 'All' : STATUS_CONFIG[f]?.label}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── Error ── */}
+      {error && <div className="td-error">{error}</div>}
+
+      {/* ── Loading ── */}
+      {loading && (
+        <div className="td-grid">
+          {[1,2,3,4,5,6].map(n => <div key={n} className="td-skeleton" />)}
+        </div>
+      )}
+
+      {/* ── Empty ── */}
+      {!loading && displayed.length === 0 && (
+        <div className="td-empty">
+          <div className="td-empty-icon">📭</div>
+          <h3>No tickets found</h3>
+          <p>{filter !== 'ALL' ? `No ${STATUS_CONFIG[filter]?.label} tickets.` : 'Create your first ticket!'}</p>
+          <button className="td-btn td-btn-primary" onClick={() => navigate('/tickets/create')}>
+            + Create Ticket
+          </button>
+        </div>
+      )}
+
+      {/* ── Grid ── */}
+      {!loading && displayed.length > 0 && (
+        <>
+          <p className="td-count">{displayed.length} ticket{displayed.length !== 1 ? 's' : ''}</p>
+          <div className="td-grid">
+            {displayed.map((ticket, i) => {
+              const sc = STATUS_CONFIG[ticket.status] || STATUS_CONFIG.OPEN;
+              const pc = PRIORITY_CONFIG[ticket.priorityLevel] || PRIORITY_CONFIG.Medium;
+              return (
+                <motion.div key={ticket.id} className="td-card"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.06 }}
+                  whileHover={{ y: -4 }}
+                  onClick={() => navigate(`/tickets/${ticket.id}`)}>
+
+                  {/* Top accent bar */}
+                  <div className="td-card-accent" style={{ background: sc.color }} />
+
+                  {/* Badges row */}
+                  <div className="td-card-badges">
+                    <span className="td-status-badge"
+                      style={{ background: sc.bg, color: sc.color, border: `1px solid ${sc.border}` }}>
+                      {sc.label}
+                    </span>
+                    <span className="td-priority-badge"
+                      style={{ background: pc.bg, color: pc.color }}>
+                      <span className="td-priority-dot" style={{ background: pc.dot }} />
+                      {ticket.priorityLevel}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="td-card-title">
+                    {ticket.title || `Ticket #${ticket.id}`}
+                  </h3>
+
+                  {/* Category */}
+                  <div className="td-card-category">{ticket.category}</div>
+
+                  {/* Description */}
+                  <p className="td-card-desc">{ticket.description}</p>
+
+                  {/* Footer */}
+                  <div className="td-card-footer">
+                    <span>📍 {ticket.location}</span>
+                    <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default TicketDashboard;

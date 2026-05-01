@@ -120,7 +120,7 @@ export default function AdminDashboard() {
               {user?.name ? user.name.charAt(0).toUpperCase() : "A"}
             </div>
             <span className="ad-topbar-name">{user?.name || "Admin"}</span>
-            <button className="ad-topbar-logout" onClick={logout}>Logout</button>
+            <button className="ad-topbar-logout" onClick={async () => { await logout(); navigate("/login"); }}>Logout</button>
           </div>
         </div>
 

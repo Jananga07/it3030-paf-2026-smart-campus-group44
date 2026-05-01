@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { getAllBookings, approveBooking, rejectBooking, cancelBooking, deleteBooking } from '../api/bookingApi';
+import { getAllResources } from '../../M1/api/resourceApi';
 import StatusBadge from '../components/StatusBadge';
 import AdminSidebar from '../../AdminDashboard/AdminSidebar';
 import './AdminPanel.css';
@@ -16,6 +17,7 @@ const TAB_META = {
 
 function AdminPanel() {
   const [allBookings, setAllBookings]   = useState([]);
+  const [resourceMap, setResourceMap]   = useState({});
   const [tab, setTab]                   = useState('ALL');
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState('');
@@ -25,8 +27,13 @@ function AdminPanel() {
 
   const fetchBookings = useCallback(() => {
     setLoading(true);
-    getAllBookings(null)
-      .then(setAllBookings)
+    Promise.all([getAllBookings(null), getAllResources()])
+      .then(([bookings, resources]) => {
+        setAllBookings(bookings);
+        const map = {};
+        resources.forEach(r => { map[r.id] = r.name; });
+        setResourceMap(map);
+      })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
@@ -147,7 +154,12 @@ function AdminPanel() {
                     {displayed.map((b) => (
                       <tr key={b.id}>
                         <td className="ap-table-id">#{b.id}</td>
-                        <td>{b.resourceId}</td>
+                        <td>
+                          <div style={{ fontWeight: 600, color: '#0f172a', fontSize: 13 }}>
+                            {resourceMap[b.resourceId] || `Resource #${b.resourceId}`}
+                          </div>
+                          <div style={{ fontSize: 11, color: '#94a3b8' }}>ID: {b.resourceId}</div>
+                        </td>
                         <td>{b.userId}</td>
                         <td>{b.userEmail}</td>
                         <td style={{ whiteSpace: 'nowrap' }}>{b.bookingDate}</td>

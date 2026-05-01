@@ -13,13 +13,13 @@ const TIME_SLOTS = Array.from({ length: 15 }, (_, i) => {
   return { label, value };
 });
 
-function TimeSelect({ label, name, value, onChange, bookedHours = [] }) {
+function TimeSelect({ label, name, value, onChange, bookedHours = [], slots = TIME_SLOTS }) {
   return (
     <div className="bf-field">
       <label className="bf-label">{label}</label>
       <select name={name} value={value} onChange={onChange} required className="bf-input">
         <option value="">Select time</option>
-        {TIME_SLOTS.map((t) => {
+        {slots.map((t) => {
           const isBooked = bookedHours.includes(t.value);
           return (
             <option key={t.value} value={t.value} disabled={isBooked}>
@@ -61,17 +61,24 @@ function BookingForm() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
-  const [resourceName, setResourceName] = useState('');
+  const [resourceName, setResourceName]         = useState('');
   const [resourceCapacity, setResourceCapacity] = useState(null);
-  const [bookedHours, setBookedHours]   = useState([]);
+  const [availableFrom, setAvailableFrom]       = useState(null);
+  const [availableTo, setAvailableTo]           = useState(null);
+  const [bookedHours, setBookedHours]           = useState([]);
 
   // Fetch resource name when resourceId is known
   useEffect(() => {
     const id = urlResId || form.resourceId;
     if (!id) return;
     getResourceById(id)
-      .then(r => { setResourceName(r.name); setResourceCapacity(r.capacity); })
-      .catch(() => { setResourceName(''); setResourceCapacity(null); });
+      .then(r => {
+        setResourceName(r.name);
+        setResourceCapacity(r.capacity);
+        setAvailableFrom(r.availableFrom ? r.availableFrom.slice(0, 5) : null);
+        setAvailableTo(r.availableTo   ? r.availableTo.slice(0, 5)   : null);
+      })
+      .catch(() => { setResourceName(''); setResourceCapacity(null); setAvailableFrom(null); setAvailableTo(null); });
   }, [urlResId, form.resourceId]);
 
   // Fetch booked hours when resource + date are both set
@@ -110,6 +117,15 @@ function BookingForm() {
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const parseError   = (msg) => { try { return JSON.parse(msg).error || msg; } catch { return msg; } };
   const isConflict   = (msg) => msg?.toLowerCase().includes('conflict');
+
+  // Filter TIME_SLOTS to resource's available window
+  const availableSlots = TIME_SLOTS.filter(t => {
+    if (!availableFrom && !availableTo) return true;
+    const h = parseInt(t.value.slice(0, 2), 10);
+    const from = availableFrom ? parseInt(availableFrom.slice(0, 2), 10) : 0;
+    const to   = availableTo   ? parseInt(availableTo.slice(0, 2), 10)   : 24;
+    return h >= from && h < to;
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -185,9 +201,14 @@ function BookingForm() {
               <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
                 <Field label="Booking Date" name="bookingDate" type="date" value={form.bookingDate} onChange={handleChange} min={new Date().toISOString().split('T')[0]} />
                 <div className="bf-row">
-                  <TimeSelect label="Start Time" name="startTime" value={form.startTime} onChange={handleChange} bookedHours={bookedHours} />
-                  <TimeSelect label="End Time"   name="endTime"   value={form.endTime}   onChange={handleChange} bookedHours={bookedHours} />
+                  <TimeSelect label="Start Time" name="startTime" value={form.startTime} onChange={handleChange} bookedHours={bookedHours} slots={availableSlots} />
+                  <TimeSelect label="End Time"   name="endTime"   value={form.endTime}   onChange={handleChange} bookedHours={bookedHours} slots={availableSlots} />
                 </div>
+                {availableFrom && availableTo && (
+                  <div className="bf-capacity-hint">
+                    ⏰ This resource is available {availableFrom} – {availableTo}
+                  </div>
+                )}
               </div>
             </div>
 

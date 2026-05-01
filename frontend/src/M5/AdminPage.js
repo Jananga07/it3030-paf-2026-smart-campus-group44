@@ -2,8 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuthHeader } from "./authService";
 import "./AdminPage.css";
-// Module 4 – Notifications admin panel
-import AdminNotificationsPanel from "../M4/AdminNotificationsPanel";
 // Shared admin sidebar
 import AdminSidebar from "../AdminDashboard/AdminSidebar";
 
@@ -106,59 +104,60 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* User card list – mirrors notif-card-list */}
+        {/* User card list grouped by role */}
         {!loading && !error && users.length > 0 && (
-          <div className="admin-card-list">
-            {users.map((u) => (
-              <div key={u.id} className="admin-card">
-                {/* Avatar */}
-                <div className="admin-card-avatar">
-                  {u.pictureUrl ? (
-                    <img src={u.pictureUrl} alt={u.name} className="admin-card-avatar-img" />
-                  ) : (
-                    <span className="admin-card-avatar-placeholder">
-                      {u.name ? u.name.charAt(0).toUpperCase() : "?"}
-                    </span>
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="admin-card-body">
-                  <div className="admin-card-name">{u.name}</div>
-                  <div className="admin-card-email">{u.email}</div>
-                  <div className="admin-card-meta">
-                    <span className={`admin-card-role-badge ${u.role === "ADMIN" ? "admin" : "user"}`}>
-                      {u.role}
-                    </span>
-                    <span className="admin-card-id">ID: {u.id}</span>
+          <>
+            {[
+              { role: 'ADMIN',      label: '🛡️ Admins',      cls: 'admin' },
+              { role: 'TECHNICIAN', label: '👷 Technicians',  cls: 'tech' },
+              { role: 'USER',       label: '👤 Users',        cls: 'user' },
+            ].map(({ role, label, cls }) => {
+              const group = users.filter(u => u.role === role);
+              if (group.length === 0) return null;
+              return (
+                <div key={role} style={{ marginBottom: 28 }}>
+                  <div style={{
+                    fontSize: 13, fontWeight: 700, color: '#64748b',
+                    textTransform: 'uppercase', letterSpacing: '0.6px',
+                    marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8
+                  }}>
+                    {label}
+                    <span style={{
+                      fontSize: 11, fontWeight: 700,
+                      background: '#eff6ff', color: '#3b82f6',
+                      border: '1px solid #bfdbfe',
+                      padding: '2px 8px', borderRadius: 20
+                    }}>{group.length}</span>
+                  </div>
+                  <div className="admin-card-list">
+                    {group.map((u) => (
+                      <div key={u.id} className="admin-card">
+                        <div className="admin-card-avatar">
+                          {u.pictureUrl ? (
+                            <img src={u.pictureUrl} alt={u.name} className="admin-card-avatar-img" />
+                          ) : (
+                            <span className="admin-card-avatar-placeholder">
+                              {u.name ? u.name.charAt(0).toUpperCase() : "?"}
+                            </span>
+                          )}
+                        </div>
+                        <div className="admin-card-body">
+                          <div className="admin-card-name">{u.name}</div>
+                          <div className="admin-card-email">{u.email}</div>
+                          <div className="admin-card-meta">
+                            <span className={`admin-card-role-badge ${cls}`}>{u.role}</span>
+                            <span className="admin-card-id">ID: {u.id}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-
-                {/* Role toggle */}
-                <div className="admin-card-actions">
-                  {u.role === "USER" ? (
-                    <button
-                      className="admin-card-promote-btn"
-                      onClick={() => handleRoleChange(u.id, "ADMIN")}
-                    >
-                      Promote to Admin
-                    </button>
-                  ) : (
-                    <button
-                      className="admin-card-demote-btn"
-                      onClick={() => handleRoleChange(u.id, "USER")}
-                    >
-                      Demote to User
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+              );
+            })}
+          </>
         )}
 
-        {/* Module 4 – Notifications admin panel */}
-        <AdminNotificationsPanel />
       </div>
       </div>
     </div>

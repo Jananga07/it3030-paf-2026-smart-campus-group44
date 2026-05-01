@@ -26,7 +26,7 @@ function BookingDetail() {
   const handleDelete = async () => {
     if (!window.confirm('Delete this booking permanently?')) return;
     setActionLoading(true);
-    try { await deleteBooking(id); navigate('/bookings'); }
+    try { await deleteBooking(id); navigate('/my-bookings'); }
     catch (e) { alert(e.message); setActionLoading(false); }
   };
 

@@ -237,3 +237,8 @@
 .admin-page-error {
   color: #ef4444;
 }
+
+.admin-card-role-badge.tech {
+  background: #f5f3ff;
+  color: #7c3aed;
+}

@@ -76,6 +76,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/notifications/**").authenticated()
 
                 // Admin-only management endpoints
+                .requestMatchers(HttpMethod.DELETE, "/api/bookings/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/comments/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/tickets/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/resources/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 

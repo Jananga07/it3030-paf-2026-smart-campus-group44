@@ -3,6 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const RESOURCE_TYPES = ["LECTURE_HALL", "LAB", "MEETING_ROOM", "EQUIPMENT"];
 
+// Hourly slots 6:00 AM – 10:00 PM
+const HOUR_SLOTS = Array.from({ length: 17 }, (_, i) => {
+  const hour  = i + 6;
+  const label = hour < 12 ? `${hour}:00 AM` : hour === 12 ? `12:00 PM` : `${hour - 12}:00 PM`;
+  const value = `${String(hour).padStart(2, '0')}:00`;
+  return { label, value };
+});
+
 const EMPTY_FORM = {
   name: "",
   type: "LECTURE_HALL",
@@ -140,12 +148,22 @@ export default function ResourceFormModal({ resource, onClose, onSave }) {
             <div className="form-row">
               <div className="form-group">
                 <label>Available From</label>
-                <input type="time" name="availableFrom" value={form.availableFrom} onChange={handleChange} />
+                <select name="availableFrom" value={form.availableFrom} onChange={handleChange}>
+                  <option value="">Select start time</option>
+                  {HOUR_SLOTS.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
               </div>
               <div className="form-group">
                 <label>Available To</label>
-                <input type="time" name="availableTo" value={form.availableTo} onChange={handleChange}
-                  className={errors.availableTo ? "input-error" : ""} />
+                <select name="availableTo" value={form.availableTo} onChange={handleChange}
+                  className={errors.availableTo ? "input-error" : ""}>
+                  <option value="">Select end time</option>
+                  {HOUR_SLOTS.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
                 {errors.availableTo && <span className="field-error">{errors.availableTo}</span>}
               </div>
             </div>

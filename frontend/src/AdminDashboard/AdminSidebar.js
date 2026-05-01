@@ -65,17 +65,7 @@ export default function AdminSidebar() {
             👋 {user.name}
           </div>
         )}
-        <button
-          onClick={async () => { await logout(); navigate("/"); }}
-          style={{
-            width: "100%", padding: "8px 12px", borderRadius: 8,
-            border: "1px solid #ef4444", background: "transparent",
-            color: "#fca5a5", fontSize: 13, fontWeight: 600,
-            cursor: "pointer", transition: "0.15s",
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = "#ef4444"; e.currentTarget.style.color = "#fff"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#fca5a5"; }}
-        >
+        <button className="sc-sidebar-logout" onClick={async () => { await logout(); navigate("/login"); }}>
           🚪 Logout
         </button>
       </div>
