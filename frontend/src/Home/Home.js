@@ -244,30 +244,41 @@ export default function HomePage() {
                 key={i}
                 className="hp-gallery-card"
                 variants={{
-                  hidden: { opacity: 0, y: 50, scale: 0.92 },
-                  show:   { opacity: 1, y: 0,  scale: 1,
-                    transition: { duration: 0.55, delay: i * 0.1, ease: "easeOut" } },
+                  hidden: { opacity: 0, y: 60, scale: 0.88, rotateX: 8 },
+                  show:   { opacity: 1, y: 0,  scale: 1, rotateX: 0,
+                    transition: { duration: 0.6, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] } },
                 }}
-                whileHover={{ y: -10, scale: 1.03 }}
-                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                whileHover={{
+                  y: -14,
+                  scale: 1.04,
+                  boxShadow: "0 24px 60px rgba(59,130,246,0.28)",
+                  transition: { type: "spring", stiffness: 280, damping: 18 }
+                }}
               >
                 <motion.img
                   src={item.img}
                   alt={item.title}
-                  whileHover={{ scale: 1.12 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  whileHover={{ scale: 1.14 }}
+                  transition={{ duration: 0.55, ease: "easeOut" }}
                 />
-                {/* shimmer sweep on hover */}
                 <div className="hp-gallery-shimmer" />
                 <div className="hp-gallery-overlay">
                   <motion.span
                     className="hp-gallery-label"
-                    initial={{ opacity: 0, y: 8 }}
+                    initial={{ opacity: 0, y: 14 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + i * 0.08 }}>
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3 + i * 0.1, duration: 0.4 }}>
                     {item.title}
                   </motion.span>
                 </div>
+                {/* Animated border glow on hover */}
+                <motion.div
+                  className="hp-gallery-glow"
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                />
               </motion.div>
             ))}
           </motion.div>
